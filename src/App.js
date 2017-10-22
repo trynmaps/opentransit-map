@@ -5,9 +5,7 @@ import MapGL from 'react-map-gl';
 import DeckGL, {LineLayer, GeoJsonLayer } from 'deck.gl';
 import { MAPBOX_ACCESS_TOKEN } from './config';
 import muniRoutesGeoJson from './muniRoutes.geo';
-
-
-
+import getVehicles from './GetVehicles';
 
 const routesLayer = new GeoJsonLayer({
   id: 'muni-routes-geojson',
@@ -28,17 +26,29 @@ class App extends Component {
       latitude: 37.7853,
       zoom: 15,
       pitch: 0,
-      bearing: 0
+      bearing: 0,
+    },
+    settings: {
+      dragPan: true,
+      dragRotate: true,
+      scrollZoom: true,
+      touchZoomRotate: true,
+      doubleClickZoom: true,
+      minZoom: 0,
+      maxZoom: 20,
+      minPitch: 0,
+      maxPitch: 85,
     },
   };
 
   renderMap() {
     console.log(muniRoutesGeoJson);
-    const { viewport } = this.state;
+    const { viewport, settings } = this.state;
     return (
       <MapGL {...viewport} 
+        mapStyle="mapbox://styles/mapbox/streets-v9"
         mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
-        onViewportChange={this._onViewportChange}
+        onViewportChange={this._onViewportChange} 
       >
         <DeckGL 
           {...viewport} 
@@ -51,6 +61,7 @@ class App extends Component {
   }
 
   render() {
+    getVehicles();
     return (
       <div>
       <div className="App">
