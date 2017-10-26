@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import MapGL from 'react-map-gl';
-import DeckGL, {LineLayer, GeoJsonLayer } from 'deck.gl';
+import './Zoom.css';
+import {render} from 'react-dom';
+import ReactMapGL, { NavigationControl } from 'react-map-gl';
+import DeckGL, { GeoJsonLayer } from 'deck.gl';
 import { MAPBOX_ACCESS_TOKEN } from './config';
 import muniRoutesGeoJson from './muniRoutes.geo';
 import getVehicles from './GetVehicles';
@@ -30,10 +32,10 @@ class App extends Component {
     },
     settings: {
       dragPan: true,
-      dragRotate: true,
-      scrollZoom: true,
-      touchZoomRotate: true,
-      doubleClickZoom: true,
+      //dragRotate: true,
+      //scrollZoom: true,
+      //touchZoomRotate: true,
+      //doubleClickZoom: true,
       minZoom: 0,
       maxZoom: 20,
       minPitch: 0,
@@ -45,18 +47,21 @@ class App extends Component {
     console.log(muniRoutesGeoJson);
     const { viewport, settings } = this.state;
     return (
-      <MapGL {...viewport} 
+      <ReactMapGL {...viewport} 
         mapStyle="mapbox://styles/mapbox/streets-v9"
         mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
         onViewportChange={this._onViewportChange} 
       >
+        <div className="navigation-control">
+          <NavigationControl onViewportChange={this._onViewportChange} />
+        </div>
         <DeckGL 
           {...viewport} 
           layers={[
             routesLayer,
           ]}
         />
-      </MapGL>
+      </ReactMapGL>
     );
   }
 
