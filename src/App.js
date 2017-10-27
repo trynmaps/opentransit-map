@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
-import './Zoom.css';
-import {render} from 'react-dom';
+import logo from './res/logo.svg';
+import './styles/App.css';
+import './styles/Zoom.css';
 import ReactMapGL, { NavigationControl } from 'react-map-gl';
 import DeckGL, { GeoJsonLayer } from 'deck.gl';
 import { MAPBOX_ACCESS_TOKEN } from './config';
-import muniRoutesGeoJson from './muniRoutes.geo';
-import getVehicles from './GetVehicles';
+import muniRoutesGeoJson from './res/muniRoutes.geo';
+import getVehicles from './helpers/GetVehicles';
 
 const routesLayer = new GeoJsonLayer({
   id: 'muni-routes-geojson',
