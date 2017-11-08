@@ -1,7 +1,7 @@
 ## Getting Started
 
 1. Run `yarn`.
-2. Run `npm start`.
+2. Run `yarn start`.
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
