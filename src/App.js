@@ -7,6 +7,7 @@ import DeckGL, { GeoJsonLayer } from 'deck.gl';
 import { MAPBOX_ACCESS_TOKEN } from './config';
 import muniRoutesGeoJson from './res/muniRoutes.geo';
 import getVehicles from './helpers/GetVehicles';
+import Checkbox from './Checkbox';
 
 const routesLayer = new GeoJsonLayer({
   id: 'muni-routes-geojson',
@@ -42,9 +43,47 @@ class App extends Component {
     },
   };
 
+  createAllGeoJsonLayerCheckboxes() {
+    var result = muniRoutesGeoJson.features.map(i => this.createCheckbox(i.properties.name));
+    console.log("result: " + result);
+    return result;
+    //return allRoutes.push(muniRoutesGeoJson);
+  }
+
+  createGeoJsonLayer(bus) {
+    return new GeoJsonLayer({
+      id: bus.id,
+      data: bus.geometry,
+      filled: true,
+      stroked: false,
+      extruded: true,
+    });
+  }
+
+  componentWillMount = () => {
+    this.selectedCheckboxes = new Set();
+  }
+
+  toggleCheckbox = label => {
+    console.log("dkljfhkldhfdf");
+    if (this.selectedCheckboxes.has(label)) {
+      this.selectedCheckboxes.delete(label);
+    } else {
+      this.selectedCheckboxes.add(label);
+    }
+  }
+
+  createCheckbox = label => (
+    <Checkbox
+            label={label}
+            handleCheckboxChange={this.toggleCheckbox}
+            key={label}
+        />
+  )
+
   renderMap() {
-    console.log(muniRoutesGeoJson);
     const { viewport, settings } = this.state;
+
     return (
       <ReactMapGL {...viewport} 
         mapStyle="mapbox://styles/mapbox/streets-v9"
@@ -64,21 +103,23 @@ class App extends Component {
     );
   }
 
+  renderControlPanel() {
+    console.log("Rendering control panel");
+    return (
+    <div className="control-panel">
+      <div>
+      {this.createAllGeoJsonLayerCheckboxes()}
+      </div>
+    </div>
+    );
+  }
+
   render() {
     getVehicles();
     return (
       <div>
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-        
-      </div>
       {this.renderMap()}
+      {this.renderControlPanel()}
       </div>
     );
   }
