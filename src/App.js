@@ -9,14 +9,6 @@ import muniRoutesGeoJson from './res/muniRoutes.geo';
 import getVehicles from './helpers/GetVehicles';
 import Checkbox from './Checkbox';
 
-const routesLayer = new GeoJsonLayer({
-  id: 'muni-routes-geojson',
-  data: muniRoutesGeoJson,
-  filled: true,
-  stroked: false,
-  extruded: true,
-});
-
 class App extends Component {
 
   state = {
@@ -41,13 +33,19 @@ class App extends Component {
       minPitch: 0,
       maxPitch: 85,
     },
+    geojson: muniRoutesGeoJson
   };
 
   createAllGeoJsonLayerCheckboxes() {
-    var result = muniRoutesGeoJson.features.map(i => this.createCheckbox(i.properties.name));
-    console.log("result: " + result);
+    var result = muniRoutesGeoJson.features.map(i => this.createCheckbox(i.properties.name, i.properties.onestop_id));
     return result;
     //return allRoutes.push(muniRoutesGeoJson);
+  }
+
+  getAllVehicleRoutes() {
+    var result = muniRoutesGeoJson.features;
+    console.log(result);
+    return "";
   }
 
   createGeoJsonLayer(bus) {
@@ -65,24 +63,25 @@ class App extends Component {
   }
 
   toggleCheckbox = label => {
-    console.log("dkljfhkldhfdf");
     if (this.selectedCheckboxes.has(label)) {
       this.selectedCheckboxes.delete(label);
     } else {
       this.selectedCheckboxes.add(label);
     }
+    console.log(this.selectedCheckboxes);
   }
 
-  createCheckbox = label => (
+  createCheckbox = (label, id) => (
     <Checkbox
             label={label}
             handleCheckboxChange={this.toggleCheckbox}
+            stopId={id}
             key={label}
         />
   )
 
   renderMap() {
-    const { viewport, settings } = this.state;
+    const { viewport, geojson } = this.state;
 
     return (
       <ReactMapGL {...viewport} 
@@ -96,7 +95,13 @@ class App extends Component {
         <DeckGL 
           {...viewport} 
           layers={[
-            routesLayer,
+          new GeoJsonLayer({
+              id: 'muni-routes-geojson',
+              data: {...geojson},
+              filled: true,
+              stroked: false,
+              extruded: true,
+            })
           ]}
         />
       </ReactMapGL>
@@ -120,6 +125,7 @@ class App extends Component {
       <div>
       {this.renderMap()}
       {this.renderControlPanel()}
+      {this.getAllVehicleRoutes()}
       </div>
     );
   }
