@@ -37,7 +37,8 @@ class App extends Component {
   };
 
   createAllGeoJsonLayerCheckboxes() {
-    var result = muniRoutesGeoJson.features.map(i => this.createCheckbox(i.properties.name, i.properties.onestop_id));
+    //var result = muniRoutesGeoJson.features.map(i => this.createCheckbox(i.properties.name, i.properties.onestop_id));
+    var result = muniRoutesGeoJson.features.map(i => this.createCheckbox(i));
     return result;
     //return allRoutes.push(muniRoutesGeoJson);
   }
@@ -62,21 +63,22 @@ class App extends Component {
     this.selectedCheckboxes = new Set();
   }
 
-  toggleCheckbox = label => {
-    if (this.selectedCheckboxes.has(label)) {
-      this.selectedCheckboxes.delete(label);
+  toggleCheckbox = route => {
+    if (this.selectedCheckboxes.has(route)) {
+      this.selectedCheckboxes.delete(route);
     } else {
-      this.selectedCheckboxes.add(label);
+      this.selectedCheckboxes.add(route);
     }
     console.log(this.selectedCheckboxes);
+    this.setState({geojson: this.selectedCheckboxes});
   }
 
-  createCheckbox = (label, id) => (
+  createCheckbox = route => (
     <Checkbox
-            label={label}
+            route={route}
+            label={route.properties.name}
             handleCheckboxChange={this.toggleCheckbox}
-            stopId={id}
-            key={label}
+            key={route.properties.name}
         />
   )
 
