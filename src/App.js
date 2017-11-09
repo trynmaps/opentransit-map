@@ -21,8 +21,8 @@ class App extends Component {
   state = {
     // Viewport settings that is shared between mapbox and deck.gl
     viewport: {
-      width: 1200,
-      height: 700,
+      width: window.innerWidth,
+      height: window.innerHeight,
       longitude: -122.41669,
       latitude: 37.7853,
       zoom: 15,
