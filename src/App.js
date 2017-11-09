@@ -86,7 +86,7 @@ class App extends Component {
 
     return (
       <ReactMapGL {...viewport} 
-        mapStyle="mapbox://styles/mapbox/streets-v9"
+        mapStyle="mapbox://styles/eddyionescu/cj9btlvm2423a2sprnbgpk9r5"
         mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
         onViewportChange={this._onViewportChange} 
       >
