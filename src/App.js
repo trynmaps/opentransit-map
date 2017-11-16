@@ -6,7 +6,6 @@ import ReactMapGL, { NavigationControl } from 'react-map-gl';
 import DeckGL, { GeoJsonLayer } from 'deck.gl';
 import { MAPBOX_ACCESS_TOKEN } from './config';
 import muniRoutesGeoJson from './res/muniRoutes.geo';
-import getVehicles from './helpers/GetVehicles';
 import Checkbox from './Checkbox';
 
 class App extends Component {
@@ -122,7 +121,6 @@ class App extends Component {
   }
 
   render() {
-    getVehicles();
     return (
       <div>
       {this.renderMap()}
@@ -133,7 +131,6 @@ class App extends Component {
   }
 
   _onViewportChange = viewport => this.setState({viewport});
-
 
 }
 
