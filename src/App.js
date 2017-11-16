@@ -21,7 +21,7 @@ class App extends Component {
   state = {
     // Viewport settings that is shared between mapbox and deck.gl
     viewport: {
-      width: window.innerWidth,
+      width: (2 * window.innerWidth) / 3,
       height: window.innerHeight,
       longitude: -122.41669,
       latitude: 37.7853,
@@ -70,7 +70,9 @@ class App extends Component {
         <div className="map">
           {this.renderMap()}
         </div>
-        <Sidebar className="sidebar pad2"></Sidebar>
+        <div className="sidebar pad2">
+          <Sidebar></Sidebar>
+        </div>
       </div>
       
     );

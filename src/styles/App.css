@@ -12,7 +12,6 @@ gets 2/3 of the page. You can adjust this to your personal liking. */
 .sidebar {
   width: 33.3333%;
   z-index: 1;
-  border-right: 1px solid white;
 }
 
 .map {
@@ -21,6 +20,7 @@ gets 2/3 of the page. You can adjust this to your personal liking. */
   width: 66.6666%;
   top: 0;
   bottom: 0;
+  border-left: 1px solid white;
 }
 
 .pad2 {
