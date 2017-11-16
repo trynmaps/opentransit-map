@@ -6,6 +6,7 @@ import ReactMapGL, { NavigationControl } from 'react-map-gl';
 import DeckGL, { GeoJsonLayer } from 'deck.gl';
 import { MAPBOX_ACCESS_TOKEN } from './config';
 import muniRoutesGeoJson from './res/muniRoutes.geo';
+import Sidebar from './components/sidebar';
 
 const routesLayer = new GeoJsonLayer({
   id: 'muni-routes-geojson',
@@ -20,7 +21,7 @@ class App extends Component {
   state = {
     // Viewport settings that is shared between mapbox and deck.gl
     viewport: {
-      width: window.innerWidth,
+      width: (2 * window.innerWidth) / 3,
       height: window.innerHeight,
       longitude: -122.41669,
       latitude: 37.7853,
@@ -66,18 +67,14 @@ class App extends Component {
   render() {
     return (
       <div>
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-        
+        <div className="map">
+          {this.renderMap()}
+        </div>
+        <div className="sidebar pad2">
+          <Sidebar></Sidebar>
+        </div>
       </div>
-      {this.renderMap()}
-      </div>
+      
     );
   }
 
