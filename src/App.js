@@ -104,19 +104,21 @@ class App extends Component {
 
   renderControlPanel() {
     return (
-    <div className="control-panel">
-      <div>
-      {this.createAllGeoJsonLayerCheckboxes()}
+      <div className="control-panel">
+        {this.createAllGeoJsonLayerCheckboxes()}
       </div>
-    </div>
     );
   }
 
   render() {
     return (
-      <div>
+      <div className="container">
+      <div className="map">
       {this.renderMap()}
+      </div>
+      <div className="control-panel-container">
       {this.renderControlPanel()}
+      </div>
       </div>
     );
   }
