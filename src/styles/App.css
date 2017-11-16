@@ -25,7 +25,5 @@ gets 2/3 of the page. You can adjust this to your personal liking. */
 
 .pad2 {
   padding: 20px;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
