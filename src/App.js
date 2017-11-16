@@ -23,10 +23,6 @@ class App extends Component {
     },
     settings: {
       dragPan: true,
-      //dragRotate: true,
-      //scrollZoom: true,
-      //touchZoomRotate: true,
-      //doubleClickZoom: true,
       minZoom: 0,
       maxZoom: 20,
       minPitch: 0,
@@ -36,16 +32,8 @@ class App extends Component {
   };
 
   createAllGeoJsonLayerCheckboxes() {
-    //var result = muniRoutesGeoJson.features.map(i => this.createCheckbox(i.properties.name, i.properties.onestop_id));
     var result = muniRoutesGeoJson.features.map(i => this.createCheckbox(i));
     return result;
-    //return allRoutes.push(muniRoutesGeoJson);
-  }
-
-  getAllVehicleRoutes() {
-    var result = muniRoutesGeoJson.features;
-    console.log(result);
-    return "";
   }
 
   createGeoJsonLayer(bus) {
@@ -59,24 +47,29 @@ class App extends Component {
   }
 
   componentWillMount = () => {
-    this.selectedCheckboxes = new Set();
+    this.selectedRoutes = new Set();
   }
 
-  toggleCheckbox = route => {
-    if (this.selectedCheckboxes.has(route)) {
-      this.selectedCheckboxes.delete(route);
+  filterRoutes = route => {
+    if (this.selectedRoutes.has(route)) {
+      this.selectedRoutes.delete(route);
     } else {
-      this.selectedCheckboxes.add(route);
+      this.selectedRoutes.add(route);
     }
-    console.log(this.selectedCheckboxes);
-    this.setState({geojson: this.selectedCheckboxes});
+    console.log("Selected routes changed");
+    console.log(Array.from(this.selectedRoutes));
+    var newGeojson = {
+      features: Array.from(this.selectedRoutes),
+      type: "FeatureCollection"
+    };
+    this.setState({geojson: newGeojson});
   }
 
   createCheckbox = route => (
     <Checkbox
             route={route}
             label={route.properties.name}
-            handleCheckboxChange={this.toggleCheckbox}
+            handleCheckboxChange={this.filterRoutes}
             key={route.properties.name}
         />
   )
@@ -110,7 +103,6 @@ class App extends Component {
   }
 
   renderControlPanel() {
-    console.log("Rendering control panel");
     return (
     <div className="control-panel">
       <div>
@@ -125,7 +117,6 @@ class App extends Component {
       <div>
       {this.renderMap()}
       {this.renderControlPanel()}
-      {this.getAllVehicleRoutes()}
       </div>
     );
   }
