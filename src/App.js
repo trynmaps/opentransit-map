@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import logo from './res/logo.svg';
 import './styles/App.css';
 import './styles/Zoom.css';
-import ReactMapGL, { NavigationControl } from 'react-map-gl';
-import DeckGL, { GeoJsonLayer } from 'deck.gl';
-import { MAPBOX_ACCESS_TOKEN } from './config';
+import ReactMapGL, {NavigationControl} from 'react-map-gl';
+import DeckGL, {GeoJsonLayer} from 'deck.gl';
+import {MAPBOX_ACCESS_TOKEN} from './config';
 import muniRoutesGeoJson from './res/muniRoutes.geo';
 
 const routesLayer = new GeoJsonLayer({
@@ -41,20 +41,26 @@ class App extends Component {
     },
   };
 
+  componentWillReceiveProps(next) {
+    if (next) {
+      console.log(next);
+    }
+  }
+
   renderMap() {
     console.log(muniRoutesGeoJson);
-    const { viewport, settings } = this.state;
+    const {viewport, settings} = this.state;
     return (
-      <ReactMapGL {...viewport} 
-        mapStyle="mapbox://styles/eddyionescu/cj9btlvm2423a2sprnbgpk9r5"
-        mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
-        onViewportChange={this._onViewportChange} 
+      <ReactMapGL {...viewport}
+                  mapStyle="mapbox://styles/eddyionescu/cj9btlvm2423a2sprnbgpk9r5"
+                  mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
+                  onViewportChange={this._onViewportChange}
       >
         <div className="navigation-control">
-          <NavigationControl onViewportChange={this._onViewportChange} />
+          <NavigationControl onViewportChange={this._onViewportChange}/>
         </div>
-        <DeckGL 
-          {...viewport} 
+        <DeckGL
+          {...viewport}
           layers={[
             routesLayer,
           ]}
@@ -66,17 +72,21 @@ class App extends Component {
   render() {
     return (
       <div>
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-        
-      </div>
-      {this.renderMap()}
+        <h1>
+          { // PROPS USAGE EXAMPLE
+            <div key={'example-agency'}>Agency: {this.props.viewer.agency} </div>
+          }
+        </h1>
+        <div className="App">
+          <header className="App-header">
+            <img src={logo} className="App-logo" alt="logo"/>
+            <h1 className="App-title">Welcome to React</h1>
+          </header>
+          <p className="App-intro">
+            To get started, edit <code>src/App.js</code> and save to reload.
+          </p>
+        </div>
+        {this.renderMap()}
       </div>
     );
   }
