@@ -73,12 +73,8 @@ class App extends Component {
     return (
       <div>
         <h1>
-          {
-            this.props.viewer && [
-              <div>Agency:  {this.props.viewer.agency} </div>,
-              <div>Start Time:  {this.props.viewer.startTime} </div>,
-              <div>End Time:  {this.props.viewer.endTime} </div>
-            ]
+          { // PROPS USAGE EXAMPLE
+            <div key={'example-agency'}>Agency: {this.props.viewer.agency} </div>
           }
         </h1>
         <div className="App">

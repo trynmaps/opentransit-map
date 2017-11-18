@@ -100,10 +100,5 @@
   },
   "eslintConfig": {
     "extends": "react-app"
-  },
-  "graphql": {
-    "request": {
-      "url": "http://35.192.24.65/graphql"
-    }
   }
 }
