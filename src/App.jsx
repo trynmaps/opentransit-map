@@ -1,35 +1,42 @@
 import React, { Component } from 'react';
+import ReactMapGL, { NavigationControl } from 'react-map-gl';
+import DeckGL, { GeoJsonLayer } from 'deck.gl';
+
 import logo from './res/logo.svg';
 import './styles/App.css';
 import './styles/Zoom.css';
-import ReactMapGL, { NavigationControl } from 'react-map-gl';
-import DeckGL, { GeoJsonLayer } from 'deck.gl';
-import { MAPBOX_ACCESS_TOKEN } from './config';
-import muniRoutesGeoJson from './res/muniRoutes.geo';
+import { MAPBOX_ACCESS_TOKEN } from './config.json';
+import muniRoutesGeoJson from './res/muniRoutes.geo.json';
 import Checkbox from './Checkbox';
 
 class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      // Viewport settings that is shared between mapbox and deck.gl
+      viewport: {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        longitude: -122.41669,
+        latitude: 37.7853,
+        zoom: 15,
+        pitch: 0,
+        bearing: 0,
+      },
+      settings: {
+        dragPan: true,
+        minZoom: 0,
+        maxZoom: 20,
+        minPitch: 0,
+        maxPitch: 85,
+      },
+      geojson: muniRoutesGeoJson
+    };
+  }
 
-  state = {
-    // Viewport settings that is shared between mapbox and deck.gl
-    viewport: {
-      width: window.innerWidth,
-      height: window.innerHeight,
-      longitude: -122.41669,
-      latitude: 37.7853,
-      zoom: 15,
-      pitch: 0,
-      bearing: 0,
-    },
-    settings: {
-      dragPan: true,
-      minZoom: 0,
-      maxZoom: 20,
-      minPitch: 0,
-      maxPitch: 85,
-    },
-    geojson: muniRoutesGeoJson
-  };
+  componentWillMount = () => {
+    this.selectedRoutes = new Set();
+  }
 
   createAllGeoJsonLayerCheckboxes() {
     var result = muniRoutesGeoJson.features.map(i => this.createCheckbox(i));
@@ -44,10 +51,6 @@ class App extends Component {
       stroked: false,
       extruded: true,
     });
-  }
-
-  componentWillMount = () => {
-    this.selectedRoutes = new Set();
   }
 
   filterRoutes = route => {
@@ -75,27 +78,30 @@ class App extends Component {
   )
 
   renderMap() {
-    const { viewport, geojson } = this.state;
+    console.log(muniRoutesGeoJson);
+    const onViewportChange = viewport => this.setState({ viewport });
 
+    const { viewport, geojson } = this.state;
     return (
-      <ReactMapGL {...viewport} 
+      <ReactMapGL
+        {...viewport}
         mapStyle="mapbox://styles/eddyionescu/cj9btlvm2423a2sprnbgpk9r5"
         mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
-        onViewportChange={this._onViewportChange} 
+        onViewportChange={onViewportChange}
       >
         <div className="navigation-control">
-          <NavigationControl onViewportChange={this._onViewportChange} />
+          <NavigationControl onViewportChange={onViewportChange} />
         </div>
-        <DeckGL 
-          {...viewport} 
+        <DeckGL
+          {...viewport}
           layers={[
-          new GeoJsonLayer({
-              id: 'muni-routes-geojson',
-              data: {...geojson},
-              filled: true,
-              stroked: false,
-              extruded: true,
-            })
+            new GeoJsonLayer({
+                id: 'muni-routes-geojson',
+                data: {...geojson},
+                filled: true,
+                stroked: false,
+                extruded: true,
+              })
           ]}
         />
       </ReactMapGL>
@@ -113,18 +119,15 @@ class App extends Component {
   render() {
     return (
       <div className="container">
-      <div className="map">
-      {this.renderMap()}
-      </div>
-      <div className="control-panel-container">
-      {this.renderControlPanel()}
-      </div>
+        <div className="map">
+          {this.renderMap()}
+        </div>
+        <div className="control-panel-container">
+          {this.renderControlPanel()}
+        </div>
       </div>
     );
   }
-
-  _onViewportChange = viewport => this.setState({viewport});
-
 }
 
 export default App;
