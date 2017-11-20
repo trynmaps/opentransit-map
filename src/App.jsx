@@ -4,7 +4,6 @@ import DeckGL, { GeoJsonLayer } from 'deck.gl';
 import {
   QueryRenderer,
   graphql,
-  // createFragmentContainer,
 } from 'react-relay';
 
 import logo from './res/logo.svg';
@@ -13,6 +12,7 @@ import './styles/Zoom.css';
 import { MAPBOX_ACCESS_TOKEN } from './config.json';
 import muniRoutesGeoJson from './res/muniRoutes.geo.json';
 import environment from './relayEnv';
+import Routes from './Routes';
 
 const routesLayer = new GeoJsonLayer({
   id: 'muni-routes-geojson',
@@ -79,14 +79,7 @@ class App extends Component {
     );
   }
 
-  // container that uses this data is wrapped in a QueryRenderer
-  // TODO wrap map with a FragmentContainer, which declares
-  // all the props it needs to load so that relay can
-  // guarantee that they're available
-  // (as currently it is often not loaded in time)
-  // https://facebook.github.io/relay/docs/fragment-container.html
   renderMapRelay() {
-    // Render this somewhere with React:
     return (
       <QueryRenderer
         environment={this.state.environment}
@@ -96,32 +89,20 @@ class App extends Component {
               agency
               startTime
               states {
-                time
-                routes {
-                  name
-                  vehicles {
-                    vid
-                    lat
-                    lon
-                    heading
-                  }
-                }
+                ...Routes_state
               }
             }
           }
         `}
         variables={{
           agency: 'muni',
-          startTime: Date.now(),
+          startTime: Date.now() - 15000,
         }}
         render={({ error, props }) => {
           if (error) {
             return <div>{error.message}</div>;
           } else if (props) {
-            const { trynState } = props;
-            return trynState.states[0].routes.map(route => (
-              <div>{route.name} - {route.vehicles.length} vehicles</div>
-            ));
+            return <Routes state={props.trynState.states[0]} />;
           }
           return <div>Loading</div>;
         }}
