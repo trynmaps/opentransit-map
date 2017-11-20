@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import ReactMapGL, { NavigationControl } from 'react-map-gl';
 import DeckGL, { GeoJsonLayer } from 'deck.gl';
-
-import logo from './res/logo.svg';
 import './styles/App.css';
 import './styles/Zoom.css';
 import { MAPBOX_ACCESS_TOKEN } from './config.json';
@@ -23,62 +21,44 @@ class App extends Component {
         pitch: 0,
         bearing: 0,
       },
-      settings: {
-        dragPan: true,
-        minZoom: 0,
-        maxZoom: 20,
-        minPitch: 0,
-        maxPitch: 85,
-      },
-      geojson: muniRoutesGeoJson
+      geojson: muniRoutesGeoJson,
     };
   }
 
-  componentWillMount = () => {
+  componentWillMount() {
     this.selectedRoutes = new Set();
   }
 
   createAllGeoJsonLayerCheckboxes() {
-    var result = muniRoutesGeoJson.features.map(i => this.createCheckbox(i));
+    const result = muniRoutesGeoJson.features.map(i => this.createCheckbox(i));
     return result;
   }
 
-  createGeoJsonLayer(bus) {
-    return new GeoJsonLayer({
-      id: bus.id,
-      data: bus.geometry,
-      filled: true,
-      stroked: false,
-      extruded: true,
-    });
-  }
-
-  filterRoutes = route => {
+  filterRoutes(route) {
     if (this.selectedRoutes.has(route)) {
       this.selectedRoutes.delete(route);
     } else {
       this.selectedRoutes.add(route);
     }
-    console.log("Selected routes changed");
-    console.log(Array.from(this.selectedRoutes));
-    var newGeojson = {
+    const newGeojson = {
       features: Array.from(this.selectedRoutes),
-      type: "FeatureCollection"
+      type: 'FeatureCollection',
     };
-    this.setState({geojson: newGeojson});
+    this.setState({
+      geojson: newGeojson,
+    });
   }
 
-  createCheckbox = route => (
-    <Checkbox
-            route={route}
-            label={route.properties.name}
-            handleCheckboxChange={this.filterRoutes}
-            key={route.properties.name}
-        />
-  )
+  createCheckbox(route) {
+    return (<Checkbox
+      route={route}
+      label={route.properties.name}
+      handleCheckboxChange={this.filterRoutes}
+      key={route.properties.name}
+    />);
+  }
 
   renderMap() {
-    console.log(muniRoutesGeoJson);
     const onViewportChange = viewport => this.setState({ viewport });
 
     const { viewport, geojson } = this.state;
@@ -97,11 +77,13 @@ class App extends Component {
           layers={[
             new GeoJsonLayer({
                 id: 'muni-routes-geojson',
-                data: {...geojson},
+                data: {
+                  ...geojson,
+                },
                 filled: true,
                 stroked: false,
                 extruded: true,
-              })
+              }),
           ]}
         />
       </ReactMapGL>
