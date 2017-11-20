@@ -50,12 +50,14 @@ class App extends Component {
   }
 
   createCheckbox(route) {
-    return (<Checkbox
-      route={route}
-      label={route.properties.name}
-      handleCheckboxChange={this.filterRoutes}
-      key={route.properties.name}
-    />);
+    return (
+      <Checkbox
+        route={route}
+        label={route.properties.name}
+        handleCheckboxChange={checkedRoute => this.filterRoutes(checkedRoute)}
+        key={route.properties.name}
+      />
+    );
   }
 
   renderMap() {
