@@ -1,13 +1,18 @@
 import React, { Component } from 'react';
 import ReactMapGL, { NavigationControl } from 'react-map-gl';
 import DeckGL, { GeoJsonLayer } from 'deck.gl';
+import {
+  QueryRenderer,
+  graphql,
+} from 'react-relay';
 
 import logo from './res/logo.svg';
 import './styles/App.css';
 import './styles/Zoom.css';
 import { MAPBOX_ACCESS_TOKEN } from './config.json';
 import muniRoutesGeoJson from './res/muniRoutes.geo.json';
-
+import environment from './relayEnv';
+import Routes from './Routes';
 
 const routesLayer = new GeoJsonLayer({
   id: 'muni-routes-geojson',
@@ -42,6 +47,7 @@ class App extends Component {
         minPitch: 0,
         maxPitch: 85,
       },
+      environment,
     };
   }
 
@@ -73,6 +79,37 @@ class App extends Component {
     );
   }
 
+  renderMapRelay() {
+    return (
+      <QueryRenderer
+        environment={this.state.environment}
+        query={graphql`
+          query AppAllVehiclesQuery($agency: String!, $startTime: String!) {
+            trynState(agency: $agency, startTime: $startTime) {
+              agency
+              startTime
+              states {
+                ...Routes_state
+              }
+            }
+          }
+        `}
+        variables={{
+          agency: 'muni',
+          startTime: Date.now() - 15000,
+        }}
+        render={({ error, props }) => {
+          if (error) {
+            return <div>{error.message}</div>;
+          } else if (props) {
+            return <Routes state={props.trynState.states[0]} />;
+          }
+          return <div>Loading</div>;
+        }}
+      />
+    );
+  }
+
   render() {
     return (
       <div>
@@ -85,6 +122,7 @@ class App extends Component {
             To get started, edit <code>src/App.js</code> and save to reload.
           </p>
         </div>
+        {this.renderMapRelay()}
         {this.renderMap()}
       </div>
     );

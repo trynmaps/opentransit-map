@@ -1,6 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { installRelayDevTools } from 'relay-devtools';
 import './styles/index.css';
 import App from './App';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+installRelayDevTools();
+
+ReactDOM.render(
+  <App />,
+  document.getElementById('root'),
+);

@@ -30,11 +30,14 @@
     "postcss-flexbugs-fixes": "3.2.0",
     "postcss-loader": "2.0.6",
     "promise": "8.0.1",
+    "prop-types": "^15.6.0",
     "react": "^16.0.0",
     "react-dev-utils": "^4.1.0",
     "react-dom": "^16.0.0",
     "react-map-gl": "^3.0.5",
     "react-relay": "^1.4.1",
+    "relay-devtools": "^1.4.0",
+    "relay-runtime": "^1.4.1",
     "style-loader": "0.18.2",
     "sw-precache-webpack-plugin": "0.11.4",
     "url-loader": "0.5.9",
@@ -46,7 +49,7 @@
   "scripts": {
     "start": "node scripts/start.js",
     "test": "node scripts/test.js --env=jsdom",
-    "relay": "relay-compiler --src ./src --schema path/schema.graphql"
+    "relay": "relay-compiler --src ./src --schema ../tryn-api/schema.graphql --extensions=jsx"
   },
   "devDependencies": {
     "babel-plugin-relay": "^1.4.1",
