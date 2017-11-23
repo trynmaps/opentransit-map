@@ -1,0 +1,7 @@
+node_modules
+config.json
+src/config.json
+DS_STORE
+.DS_Store
+src/__generated__
+config.js
