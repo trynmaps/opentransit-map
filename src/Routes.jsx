@@ -4,6 +4,7 @@ import propTypes from 'prop-types';
 import { createFragmentContainer, graphql } from 'react-relay';
 import muniRoutesGeoJson from './res/muniRoutes.geo.json';
 
+// Icon Layer atlas icon
 const atlasIcon = require('./res/icon-atlas.png');
 
 const routesLayer = new GeoJsonLayer({
@@ -16,8 +17,8 @@ const routesLayer = new GeoJsonLayer({
 
 
 class Routes extends Component {
-  getMarkers() {
-    /* returns new DeckGL Icon Layer displaying all vehicles and stops on given routes */
+  getVehicleMarkers() {
+    /* returns new DeckGL Icon Layer displaying all vehicles on given routes */
     const ICON_MAPPING = {
       marker: {
         x: 0, y: 0, width: 128, height: 128, mask: true,
@@ -25,26 +26,13 @@ class Routes extends Component {
     };
 
     /* Push vehicle markers into data array */
-    const vehicleData = this.props.state.routes.reduce((acc, curr) =>
+    const data = this.props.state.routes.reduce((acc, curr) =>
       acc.concat(curr.vehicles.reduce((a, c) => {
         a.push({
           position: [c.lon, c.lat], icon: 'marker', size: 72, color: [255, 0, 0],
         });
         return a;
       }, [])), []);
-
-    // Push stop markers into data array
-    // because route.stops return null now, control stops before map function
-    const stopData = this.props.state.routes.filter(r => r.stops).reduce((acc, curr) =>
-      acc.concat(curr.stops.reduce((a, c) => {
-        a.push({
-          position: [c.lon, c.lat], icon: 'marker', size: 72, color: [255, 0, 0],
-        });
-        return a;
-      }, [])), []);
-
-    // combine vehicle and stop data
-    const data = vehicleData.concat(stopData);
 
     return (new IconLayer({
       id: 'icon-layer',
@@ -58,14 +46,14 @@ class Routes extends Component {
     // viewport passed by parent Map component
     const { viewport } = this.props;
 
-    // markerLayer displays all vehicles and stops in new Icon Layer
-    const markerLayer = this.getMarkers();
+    // markerLayer displays all vehicles in new Icon Layer
+    const vehicleMarkerLayer = this.getVehicleMarkers();
 
     return (
       <DeckGL
         {...viewport}
         layers={[
-          markerLayer,
+          vehicleMarkerLayer,
           routesLayer,
         ]}
       />
