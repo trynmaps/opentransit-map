@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import ReactMapGL, { NavigationControl } from 'react-map-gl';
-// import DeckGL, { GeoJsonLayer, IconLayer } from 'deck.gl';
 import {
   graphql,
   createFragmentContainer,
 } from 'react-relay';
 import propTypes from 'prop-types';
-import MAPBOX_ACCESS_TOKEN from './config';
+import { MAP_STYLE, MAPBOX_ACCESS_TOKEN } from './config.json';
 import Routes from './Routes';
 
 class Map extends Component {
@@ -48,7 +47,7 @@ class Map extends Component {
     return (
       <ReactMapGL
         {...viewport}
-        mapStyle="mapbox://styles/eddyionescu/cj9btlvm2423a2sprnbgpk9r5"
+        mapStyle={MAP_STYLE}
         mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
         onViewportChange={onViewportChange}
       >

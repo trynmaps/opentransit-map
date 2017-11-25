@@ -4,6 +4,8 @@ import propTypes from 'prop-types';
 import { createFragmentContainer, graphql } from 'react-relay';
 import muniRoutesGeoJson from './res/muniRoutes.geo.json';
 
+const atlasIcon = require('./res/icon-atlas.png');
+
 const routesLayer = new GeoJsonLayer({
   id: 'muni-routes-geojson',
   data: muniRoutesGeoJson,
@@ -11,6 +13,7 @@ const routesLayer = new GeoJsonLayer({
   stroked: false,
   extruded: true,
 });
+
 
 class Routes extends Component {
   getMarkers() {
@@ -20,25 +23,33 @@ class Routes extends Component {
         x: 0, y: 0, width: 128, height: 128, mask: true,
       },
     };
-    const data = [];
+
+    /* Push vehicle markers into data array */
+    const vehicleData = this.props.state.routes.reduce((acc, curr) =>
+      acc.concat(curr.vehicles.reduce((a, c) => {
+        a.push({
+          position: [c.lon, c.lat], icon: 'marker', size: 72, color: [255, 0, 0],
+        });
+        return a;
+      }, [])), []);
 
     // Push stop markers into data array
     // because route.stops return null now, control stops before map function
-    this.props.state.routes.map(route => route.stops && route.stops.map(stop =>
-      data.push({
-        position: [stop.lon, stop.lat], icon: 'marker', size: 72, color: [0, 255, 0],
-      })));
+    const stopData = this.props.state.routes.filter(r => r.stops).reduce((acc, curr) =>
+      acc.concat(curr.stops.reduce((a, c) => {
+        a.push({
+          position: [c.lon, c.lat], icon: 'marker', size: 72, color: [255, 0, 0],
+        });
+        return a;
+      }, [])), []);
 
-    /* Push vehicle markers into data array */
-    this.props.state.routes.map(route => route.vehicles.map(vehicle =>
-      data.push({
-        position: [vehicle.lon, vehicle.lat], icon: 'marker', size: 72, color: [255, 0, 0],
-      })));
+    // combine vehicle and stop data
+    const data = vehicleData.concat(stopData);
 
     return (new IconLayer({
       id: 'icon-layer',
       data,
-      iconAtlas: 'https://uber.github.io/deck.gl/images/icon-atlas.png',
+      iconAtlas: atlasIcon,
       iconMapping: ICON_MAPPING,
     }));
   }
@@ -78,22 +89,25 @@ Routes.propTypes = {
   ).isRequired,
 };
 
-export default createFragmentContainer(Routes, graphql`
-  fragment Routes_state on State {
-    routes {
-      name
-      stops {
-        sid
-        lat
-        lon
+export default createFragmentContainer(
+  Routes,
+  graphql`
+    fragment Routes_state on State {
+      routes {
         name
-      }
-      vehicles {
-        vid
-        lat
-        lon
-        heading
+        stops {
+          sid
+          lat
+          lon
+          name
+        }
+        vehicles {
+          vid
+          lat
+          lon
+          heading
+        }
       }
     }
-  }
-`);
+  `,
+);
