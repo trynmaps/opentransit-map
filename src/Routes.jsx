@@ -28,18 +28,15 @@ class Routes extends Component {
 
     // Push stop markers into data array
     const data = this.props.state.routes.filter(r => r.stops).reduce((acc, curr) =>
-      acc.concat(curr.stops.reduce((a, c) => {
-        a.push({
-          position: [c.lon, c.lat],
-          icon: 'marker',
-          size: 72,
-          color: [255, 0, 0],
-        });
-        return a;
-      }, [])), []);
+      acc.concat(curr.stops.reduce((a, c) => [...a, {
+        position: [c.lon, c.lat],
+        icon: 'marker',
+        size: 72,
+        color: [255, 0, 0],
+      }])), []);
 
     return (new IconLayer({
-      id: 'icon-layer',
+      id: 'stop-icon-layer',
       data,
       iconAtlas: atlasIcon,
       iconMapping: ICON_MAPPING,
@@ -51,21 +48,18 @@ class Routes extends Component {
 
     /* Push vehicle markers into data array */
     const data = this.props.state.routes.filter(r => r.vehicles).reduce((acc, curr) =>
-      acc.concat(curr.vehicles.filter(v => v.vid).reduce((a, c) => {
-        a.push({
-          position: [c.lon, c.lat],
-          icon: 'marker',
-          size: 72,
-          color: [0, 0, 255],
-          // added vid & heading info to display onClick pop-up
-          vid: c.vid,
-          heading: c.heading,
-        });
-        return a;
-      }, [])), []);
+      acc.concat(curr.vehicles.filter(v => v.vid).reduce((a, c) => [...a, {
+        position: [c.lon, c.lat],
+        icon: 'marker',
+        size: 72,
+        color: [0, 0, 255],
+        // added vid & heading info to display onClick pop-up
+        vid: c.vid,
+        heading: c.heading,
+      }], [])), []);
 
     return (new IconLayer({
-      id: 'icon-layer',
+      id: 'vehicle-icon-layer',
       data,
       iconAtlas: atlasIcon,
       iconMapping: ICON_MAPPING,
@@ -77,7 +71,6 @@ class Routes extends Component {
 
   displayVehicleInfo(info) {
     /* calls parent' onMarkerClick function to show pop-up to display vehicle id & heading info */
-
     if (info && info.object && info.object.vid) {
       this.props.onMarkerClick(
         info.lngLat[0],

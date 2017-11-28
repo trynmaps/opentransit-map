@@ -5,7 +5,7 @@ import {
   createFragmentContainer,
 } from 'react-relay';
 import propTypes from 'prop-types';
-import { MAP_STYLE, MAPBOX_ACCESS_TOKEN } from './config';
+import { MAP_STYLE, MAPBOX_ACCESS_TOKEN } from './config.json';
 import Routes from './Routes';
 
 
@@ -34,16 +34,13 @@ class Map extends Component {
         minPitch: 0,
         maxPitch: 85,
       },
-      coordinates: [0, 0],
-      info: '',
+      coordinates: { lon: 0, lat: 0 },
+      info: { vid: '', heading: '' },
     };
-
-    // bind this to onMarker method for child component' access to this.state
-    this.onMarkerClick = this.onMarkerClick.bind(this);
   }
 
-  onMarkerClick(x, y, info) {
-    this.setState({ coordinates: [x, y], info });
+  onMarkerClick(lon, lat, info) {
+    this.setState({ coordinates: { lon, lat }, info });
   }
 
   renderMap() {
@@ -65,9 +62,10 @@ class Map extends Component {
         </div>
 
         {/* React Map GL Popup component displays vehicle ID & heading info */}
+
         <Popup
-          longitude={this.state.coordinates[0]}
-          latitude={this.state.coordinates[1]}
+          longitude={this.state.coordinates.lon}
+          latitude={this.state.coordinates.lat}
         >
           <div>
             <p>ID: {this.state.info.vid}</p>
@@ -76,7 +74,11 @@ class Map extends Component {
         </Popup>
 
         {/* Routes component returns DeckGL component with routes and markers layer */}
-        <Routes onMarkerClick={this.onMarkerClick} state={this.props.state} viewport={viewport} />
+        <Routes
+          onMarkerClick={(lon, lat, info) => this.onMarkerClick(lon, lat, info)}
+          state={this.props.state}
+          viewport={viewport}
+        />
       </ReactMapGL>
     );
   }
