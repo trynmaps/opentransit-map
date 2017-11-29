@@ -36,7 +36,7 @@ class Map extends Component {
       },
       popup: {
         coordinates: { lon: 0, lat: 0 },
-        info: { vid: '', heading: '' },
+        info: { vid: '', heading: 0 },
       },
     };
   }
