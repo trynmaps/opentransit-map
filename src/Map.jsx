@@ -5,7 +5,7 @@ import {
   createFragmentContainer,
 } from 'react-relay';
 import propTypes from 'prop-types';
-import { MAP_STYLE, MAPBOX_ACCESS_TOKEN } from './config.json';
+import { MAP_STYLE, MAPBOX_ACCESS_TOKEN } from './config';
 import Routes from './Routes';
 
 
@@ -34,13 +34,15 @@ class Map extends Component {
         minPitch: 0,
         maxPitch: 85,
       },
-      coordinates: { lon: 0, lat: 0 },
-      info: { vid: '', heading: '' },
+      popup: {
+        coordinates: { lon: 0, lat: 0 },
+        info: { vid: '', heading: '' },
+      },
     };
   }
 
   onMarkerClick(lon, lat, info) {
-    this.setState({ coordinates: { lon, lat }, info });
+    this.setState({ popup: { coordinates: { lon, lat }, info } });
   }
 
   renderMap() {
@@ -64,12 +66,12 @@ class Map extends Component {
         {/* React Map GL Popup component displays vehicle ID & heading info */}
 
         <Popup
-          longitude={this.state.coordinates.lon}
-          latitude={this.state.coordinates.lat}
+          longitude={this.state.popup.coordinates.lon}
+          latitude={this.state.popup.coordinates.lat}
         >
           <div>
-            <p>ID: {this.state.info.vid}</p>
-            <p>Heading: {this.state.info.heading}</p>
+            <p>ID: {this.state.popup.info.vid}</p>
+            <p>Heading: {this.state.popup.info.heading}</p>
           </div>
         </Popup>
 

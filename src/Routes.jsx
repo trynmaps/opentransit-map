@@ -28,13 +28,12 @@ class Routes extends Component {
 
     // Push stop markers into data array
     const data = this.props.state.routes.filter(r => r.stops).reduce((acc, curr) =>
-      acc.concat(curr.stops.reduce((a, c) => [...a, {
+      [...acc, ...curr.stops.reduce((a, c) => [...a, {
         position: [c.lon, c.lat],
         icon: 'marker',
         size: 72,
         color: [255, 0, 0],
-      }])), []);
-
+      }], {})], []);
     return (new IconLayer({
       id: 'stop-icon-layer',
       data,
@@ -48,7 +47,7 @@ class Routes extends Component {
 
     /* Push vehicle markers into data array */
     const data = this.props.state.routes.filter(r => r.vehicles).reduce((acc, curr) =>
-      acc.concat(curr.vehicles.filter(v => v.vid).reduce((a, c) => [...a, {
+      [...acc, ...curr.vehicles.filter(v => v.vid).reduce((a, c) => [...a, {
         position: [c.lon, c.lat],
         icon: 'marker',
         size: 72,
@@ -56,7 +55,7 @@ class Routes extends Component {
         // added vid & heading info to display onClick pop-up
         vid: c.vid,
         heading: c.heading,
-      }], [])), []);
+      }], {})], []);
 
     return (new IconLayer({
       id: 'vehicle-icon-layer',
