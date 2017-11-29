@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ReactMapGL, { NavigationControl } from 'react-map-gl';
+import ReactMapGL, { NavigationControl, Popup } from 'react-map-gl';
 import {
   graphql,
   createFragmentContainer,
@@ -7,6 +7,7 @@ import {
 import propTypes from 'prop-types';
 import { MAP_STYLE, MAPBOX_ACCESS_TOKEN } from './config.json';
 import Routes from './Routes';
+
 
 class Map extends Component {
   constructor() {
@@ -33,7 +34,15 @@ class Map extends Component {
         minPitch: 0,
         maxPitch: 85,
       },
+      popup: {
+        coordinates: { lon: 0, lat: 0 },
+        info: { vid: '', heading: 0 },
+      },
     };
+  }
+
+  onMarkerClick(lon, lat, info) {
+    this.setState({ popup: { coordinates: { lon, lat }, info } });
   }
 
   renderMap() {
@@ -43,7 +52,6 @@ class Map extends Component {
     // I don't know what settings used for,
     // just keeping it in following format to bypass linter errors
     console.log(settings && settings);
-
     return (
       <ReactMapGL
         {...viewport}
@@ -55,8 +63,24 @@ class Map extends Component {
           <NavigationControl onViewportChange={onViewportChange} />
         </div>
 
+        {/* React Map GL Popup component displays vehicle ID & heading info */}
+
+        <Popup
+          longitude={this.state.popup.coordinates.lon}
+          latitude={this.state.popup.coordinates.lat}
+        >
+          <div>
+            <p>ID: {this.state.popup.info.vid}</p>
+            <p>Heading: {this.state.popup.info.heading}</p>
+          </div>
+        </Popup>
+
         {/* Routes component returns DeckGL component with routes and markers layer */}
-        <Routes state={this.props.state} viewport={viewport} />
+        <Routes
+          onMarkerClick={(lon, lat, info) => this.onMarkerClick(lon, lat, info)}
+          state={this.props.state}
+          viewport={viewport}
+        />
       </ReactMapGL>
     );
   }
