@@ -5,7 +5,7 @@ import {
   createFragmentContainer,
 } from 'react-relay';
 import propTypes from 'prop-types';
-import { MAP_STYLE, MAPBOX_ACCESS_TOKEN } from './config';
+import { MAP_STYLE, MAPBOX_ACCESS_TOKEN } from './config.json';
 import Routes from './Routes';
 
 
