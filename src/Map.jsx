@@ -7,7 +7,8 @@ import {
 import propTypes from 'prop-types';
 import { MAP_STYLE, MAPBOX_ACCESS_TOKEN } from './config.json';
 import Routes from './Routes';
-
+import muniRoutesGeoJson from './res/muniRoutes.geo.json';
+import Checkbox from './Checkbox';
 
 class Map extends Component {
   constructor() {
@@ -25,10 +26,6 @@ class Map extends Component {
       },
       settings: {
         dragPan: true,
-        // dragRotate: true,
-        // scrollZoom: true,
-        // touchZoomRotate: true,
-        // doubleClickZoom: true,
         minZoom: 0,
         maxZoom: 20,
         minPitch: 0,
@@ -38,17 +35,59 @@ class Map extends Component {
         coordinates: { lon: 0, lat: 0 },
         info: { vid: '', heading: 0 },
       },
+      geojson: muniRoutesGeoJson,
     };
+  }
+
+  componentWillMount() {
+    this.selectedRoutes = new Set();
   }
 
   onMarkerClick(lon, lat, info) {
     this.setState({ popup: { coordinates: { lon, lat }, info } });
   }
 
+  createCheckbox(route) {
+    return (
+      <Checkbox
+        route={route}
+        label={route.properties.name}
+        handleCheckboxChange={checkedRoute => this.filterRoutes(checkedRoute)}
+        key={route.properties.name}
+      />
+    );
+  }
+
+  createAllGeoJsonLayerCheckboxes() {
+    const result = muniRoutesGeoJson.features.map(i => this.createCheckbox(i));
+    return result;
+  }
+
+  filterRoutes(route) {
+    if (this.selectedRoutes.has(route)) {
+      this.selectedRoutes.delete(route);
+    } else {
+      this.selectedRoutes.add(route);
+    }
+    const newGeojson = {
+      features: Array.from(this.selectedRoutes),
+      type: 'FeatureCollection',
+    };
+    this.state.geojson = newGeojson;
+  }
+
+  renderControlPanel() {
+    return (
+      <div className="control-panel">
+        {this.createAllGeoJsonLayerCheckboxes()}
+      </div>
+    );
+  }
+
   renderMap() {
     const onViewportChange = viewport => this.setState({ viewport });
 
-    const { viewport, settings } = this.state;
+    const { viewport, settings, geojson } = this.state;
     // I don't know what settings used for,
     // just keeping it in following format to bypass linter errors
     console.log(settings && settings);
@@ -79,6 +118,7 @@ class Map extends Component {
         <Routes
           onMarkerClick={(lon, lat, info) => this.onMarkerClick(lon, lat, info)}
           state={this.props.state}
+          geojson={geojson}
           viewport={viewport}
         />
       </ReactMapGL>
@@ -87,8 +127,13 @@ class Map extends Component {
 
   render() {
     return (
-      <div>
-        {this.renderMap()}
+      <div className="container">
+        <div className="map">
+          {this.renderMap()}
+        </div>
+        <div className="control-panel-container">
+          {this.renderControlPanel()}
+        </div>
       </div>
     );
   }
@@ -109,4 +154,3 @@ export default createFragmentContainer(
     }
   `,
 );
-

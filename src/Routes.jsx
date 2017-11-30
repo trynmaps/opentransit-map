@@ -2,18 +2,9 @@ import React, { Component } from 'react';
 import DeckGL, { GeoJsonLayer, IconLayer } from 'deck.gl';
 import propTypes from 'prop-types';
 import { createFragmentContainer, graphql } from 'react-relay';
-import muniRoutesGeoJson from './res/muniRoutes.geo.json';
 
 // Icon Layer atlas icon
 const atlasIcon = require('./res/icon-atlas.png');
-
-const routesLayer = new GeoJsonLayer({
-  id: 'muni-routes-geojson',
-  data: muniRoutesGeoJson,
-  filled: true,
-  stroked: false,
-  extruded: true,
-});
 
 // placed outside of component to use in both stop & vehicle layer
 const ICON_MAPPING = {
@@ -39,6 +30,19 @@ class Routes extends Component {
       data,
       iconAtlas: atlasIcon,
       iconMapping: ICON_MAPPING,
+    }));
+  }
+
+  getRoutesLayer() {
+    return (new GeoJsonLayer({
+      id: 'muni-routes-geojson',
+      data: {
+        ...this.props.geojson,
+      },
+      lineWidthScale: 8,
+      filled: true,
+      stroked: true,
+      extruded: true,
     }));
   }
 
@@ -82,13 +86,15 @@ class Routes extends Component {
 
   renderDeck() {
     // viewport passed by parent Map component
-    const { viewport } = this.props;
+    const { viewport, geojson } = this.props;
 
     // markerLayer displays all stops in new Icon Layer
     const stopMarkerLayer = this.getStopMarkers();
 
     // markerLayer displays all vehicles in new Icon Layer
     const vehicleMarkerLayer = this.getVehicleMarkers();
+
+    const routesLayer = this.getRoutesLayer({ ...geojson });
 
     return (
       <DeckGL
@@ -101,7 +107,6 @@ class Routes extends Component {
       />
     );
   }
-
 
   render() {
     return (
@@ -119,6 +124,7 @@ Routes.propTypes = {
     propTypes.string,
     propTypes.arrayOf(propTypes.object),
   ).isRequired,
+  geojson: propTypes.string.isRequired,
 };
 
 export default createFragmentContainer(
