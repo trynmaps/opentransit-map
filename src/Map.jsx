@@ -41,10 +41,33 @@ class Map extends Component {
 
   componentWillMount() {
     this.selectedRoutes = new Set();
+    this.updateDimensions();
+    window.addEventListener('resize', this.updateDimensions.bind(this));
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateDimensions.bind(this));
   }
 
   onMarkerClick(lon, lat, info) {
     this.setState({ popup: { coordinates: { lon, lat }, info } });
+  }
+
+  /**
+   * Calculate & Update state of new dimensions
+   */
+  updateDimensions() {
+    this.setState({
+      viewport: {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        longitude: -122.41669,
+        latitude: 37.7853,
+        zoom: 15,
+        pitch: 0,
+        bearing: 0,
+      },
+    });
   }
 
   createCheckbox(route) {
