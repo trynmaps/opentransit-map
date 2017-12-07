@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins');
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
 .App {
   text-align: center;
 }
@@ -33,6 +39,10 @@
   border: 1px solid gray;
 }
 
+.map {
+  padding: 0;
+}
+
 .sidebar {
   padding-left: 0;
   padding-right: 0;
@@ -40,10 +50,19 @@
   top: 0;
   bottom: 0;
   overflow-y: scroll;
+  background-color: #2C445B;
 }
 
 .offset-md-2 {
   margin-left: 16.666667%;
+}
+
+.control-panel {
+  margin: 15px;
+}
+
+.routes-header {
+  color: #FFFFFF;
 }
 
 ul.route-checkboxes {
@@ -52,4 +71,8 @@ ul.route-checkboxes {
 
 ul.route-checkboxes li {
   list-style: none;
+}
+
+ul.route-checkboxes li {
+  color: #fff;
 }

@@ -102,6 +102,9 @@ class Map extends Component {
   renderControlPanel() {
     return (
       <div className="control-panel">
+        <div className="routes-header">
+          <h3>Routes</h3>
+        </div>
         <ul className="route-checkboxes">
           {this.createAllGeoJsonLayerCheckboxes()}
         </ul>
