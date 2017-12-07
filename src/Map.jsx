@@ -16,7 +16,7 @@ class Map extends Component {
     this.state = {
       // Viewport settings that is shared between mapbox and deck.gl
       viewport: {
-        width: window.innerWidth,
+        width: (2 * window.innerWidth) / 3,
         height: window.innerHeight,
         longitude: -122.41669,
         latitude: 37.7853,
@@ -79,7 +79,9 @@ class Map extends Component {
   renderControlPanel() {
     return (
       <div className="control-panel">
-        {this.createAllGeoJsonLayerCheckboxes()}
+        <ul className="route-checkboxes">
+          {this.createAllGeoJsonLayerCheckboxes()}
+        </ul>
       </div>
     );
   }
@@ -127,12 +129,14 @@ class Map extends Component {
 
   render() {
     return (
-      <div className="container">
-        <div className="map">
-          {this.renderMap()}
-        </div>
-        <div className="control-panel-container">
-          {this.renderControlPanel()}
+      <div className="container-fluid">
+        <div className="row">
+          <div className="map col-sm-9 offset-sm-3 col-md-10 offset-md-2">
+            {this.renderMap()}
+          </div>
+          <div className="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
+            {this.renderControlPanel()}
+          </div>
         </div>
       </div>
     );

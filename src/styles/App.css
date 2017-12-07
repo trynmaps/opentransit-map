@@ -32,3 +32,24 @@
   background-color: #ffffffa6;
   border: 1px solid gray;
 }
+
+.sidebar {
+  padding-left: 0;
+  padding-right: 0;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  overflow-y: scroll;
+}
+
+.offset-md-2 {
+  margin-left: 16.666667%;
+}
+
+ul.route-checkboxes {
+  padding: 0;
+}
+
+ul.route-checkboxes li {
+  list-style: none;
+}

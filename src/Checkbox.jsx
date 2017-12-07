@@ -22,7 +22,7 @@ class Checkbox extends Component {
     const { label } = this.props;
 
     return (
-      <div className="checkbox">
+      <li>
         <label htmlFor="input">
           <input
             type="checkbox"
@@ -32,7 +32,7 @@ class Checkbox extends Component {
           />
           {label}
         </label>
-      </div>
+      </li>
     );
   }
 }
