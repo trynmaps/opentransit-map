@@ -22,10 +22,11 @@ class App extends Component {
       <QueryRenderer
         environment={this.state.environment}
         query={graphql`
-            query AppAllVehiclesQuery($agency: String!, $startTime: String!) {
-              trynState(agency: $agency, startTime: $startTime) {
+            query AppAllVehiclesQuery($agency: String!, $startTime: String!, $endTime: String!) {
+              trynState(agency: $agency, startTime: $startTime, endTime: $endTime) {
                 agency
                 startTime
+                endTime
                 states {
                   ...Map_state
                 }
@@ -35,6 +36,7 @@ class App extends Component {
         variables={{
           agency: 'muni',
           startTime: Date.now() - 15000,
+          endTime: Date.now(),
         }}
         render={({ error, props }) => {
           if (error) {
