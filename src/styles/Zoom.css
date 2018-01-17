@@ -1,5 +1,5 @@
 .navigation-control {
-	position: absolute; 
+	position: fixed; 
 	right: 0;
 	padding: 10px;
 }
