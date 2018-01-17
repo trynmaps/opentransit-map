@@ -7,7 +7,8 @@ import {
 import propTypes from 'prop-types';
 import { MAP_STYLE, MAPBOX_ACCESS_TOKEN } from './config.json';
 import Routes from './Routes';
-
+import muniRoutesGeoJson from './res/muniRoutes.geo.json';
+import Checkbox from './Checkbox';
 
 class Map extends Component {
   constructor() {
@@ -15,7 +16,7 @@ class Map extends Component {
     this.state = {
       // Viewport settings that is shared between mapbox and deck.gl
       viewport: {
-        width: window.innerWidth,
+        width: (2 * window.innerWidth) / 3,
         height: window.innerHeight,
         longitude: -122.41669,
         latitude: 37.7853,
@@ -25,10 +26,6 @@ class Map extends Component {
       },
       settings: {
         dragPan: true,
-        // dragRotate: true,
-        // scrollZoom: true,
-        // touchZoomRotate: true,
-        // doubleClickZoom: true,
         minZoom: 0,
         maxZoom: 20,
         minPitch: 0,
@@ -38,17 +35,87 @@ class Map extends Component {
         coordinates: { lon: 0, lat: 0 },
         info: { vid: '', heading: 0 },
       },
+      geojson: muniRoutesGeoJson,
     };
+  }
+
+  componentWillMount() {
+    this.selectedRoutes = new Set();
+    this.updateDimensions();
+    window.addEventListener('resize', this.updateDimensions.bind(this));
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateDimensions.bind(this));
   }
 
   onMarkerClick(lon, lat, info) {
     this.setState({ popup: { coordinates: { lon, lat }, info } });
   }
 
+  /**
+   * Calculate & Update state of new dimensions
+   */
+  updateDimensions() {
+    this.setState({
+      viewport: {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        longitude: -122.41669,
+        latitude: 37.7853,
+        zoom: 15,
+        pitch: 0,
+        bearing: 0,
+      },
+    });
+  }
+
+  createCheckbox(route) {
+    return (
+      <Checkbox
+        route={route}
+        label={route.properties.name}
+        handleCheckboxChange={checkedRoute => this.filterRoutes(checkedRoute)}
+        key={route.properties.name}
+      />
+    );
+  }
+
+  createAllGeoJsonLayerCheckboxes() {
+    const result = muniRoutesGeoJson.features.map(i => this.createCheckbox(i));
+    return result;
+  }
+
+  filterRoutes(route) {
+    if (this.selectedRoutes.has(route)) {
+      this.selectedRoutes.delete(route);
+    } else {
+      this.selectedRoutes.add(route);
+    }
+    const newGeojson = {
+      features: Array.from(this.selectedRoutes),
+      type: 'FeatureCollection',
+    };
+    this.state.geojson = newGeojson;
+  }
+
+  renderControlPanel() {
+    return (
+      <div className="control-panel">
+        <div className="routes-header">
+          <h3>Routes</h3>
+        </div>
+        <ul className="route-checkboxes">
+          {this.createAllGeoJsonLayerCheckboxes()}
+        </ul>
+      </div>
+    );
+  }
+
   renderMap() {
     const onViewportChange = viewport => this.setState({ viewport });
 
-    const { viewport, settings } = this.state;
+    const { viewport, settings, geojson } = this.state;
     // I don't know what settings used for,
     // just keeping it in following format to bypass linter errors
     console.log(settings && settings);
@@ -79,6 +146,7 @@ class Map extends Component {
         <Routes
           onMarkerClick={(lon, lat, info) => this.onMarkerClick(lon, lat, info)}
           state={this.props.state}
+          geojson={geojson}
           viewport={viewport}
         />
       </ReactMapGL>
@@ -87,8 +155,15 @@ class Map extends Component {
 
   render() {
     return (
-      <div>
-        {this.renderMap()}
+      <div className="container-fluid">
+        <div className="row">
+          <div className="map col-sm-9 offset-sm-3 col-md-10 offset-md-2">
+            {this.renderMap()}
+          </div>
+          <div className="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
+            {this.renderControlPanel()}
+          </div>
+        </div>
       </div>
     );
   }
@@ -109,4 +184,3 @@ export default createFragmentContainer(
     }
   `,
 );
-
