@@ -145,8 +145,8 @@ class Map extends Component {
         {/* Routes component returns DeckGL component with routes and markers layer */}
         <Routes
           onMarkerClick={(lon, lat, info) => this.onMarkerClick(lon, lat, info)}
-          state={this.props.state}
           geojson={geojson}
+          route={this.props.route}
           viewport={viewport}
         />
       </ReactMapGL>
@@ -170,7 +170,7 @@ class Map extends Component {
 }
 
 Map.propTypes = {
-  state: propTypes.shape(
+  route: propTypes.shape(
     propTypes.string,
     propTypes.arrayOf(propTypes.object),
   ).isRequired,
@@ -179,8 +179,8 @@ Map.propTypes = {
 export default createFragmentContainer(
   Map,
   graphql`
-    fragment Map_state on State {
-      ...Routes_state
+    fragment Map_route on Route {
+      ...Routes_route
     }
   `,
 );

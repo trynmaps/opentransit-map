@@ -18,7 +18,7 @@ class Routes extends Component {
     /* returns new DeckGL Icon Layer displaying all stops on given routes */
 
     // Push stop markers into data array
-    const data = this.props.state.routes.filter(r => r.stops).reduce((acc, curr) =>
+    const data = [this.props.route].filter(r => r.stops).reduce((acc, curr) =>
       [...acc, ...curr.stops.reduce((a, c) => [...a, {
         position: [c.lon, c.lat],
         icon: 'marker',
@@ -50,8 +50,8 @@ class Routes extends Component {
     /* returns new DeckGL Icon Layer displaying all vehicles on given routes */
 
     /* Push vehicle markers into data array */
-    const data = this.props.state.routes.filter(r => r.vehicles).reduce((acc, curr) =>
-      [...acc, ...curr.vehicles.filter(v => v.vid).reduce((a, c) => [...a, {
+    const data = [this.props.route].filter(r => r.routeStates[0].vehicles).reduce((acc, curr) =>
+      [...acc, ...curr.routeStates[0].vehicles.filter(v => v.vid).reduce((a, c) => [...a, {
         position: [c.lon, c.lat],
         icon: 'marker',
         size: 72,
@@ -120,7 +120,7 @@ class Routes extends Component {
 Routes.propTypes = {
   onMarkerClick: propTypes.func.isRequired,
   viewport: propTypes.shape().isRequired,
-  state: propTypes.shape(
+  route: propTypes.shape(
     propTypes.string,
     propTypes.arrayOf(propTypes.object),
   ).isRequired,
@@ -130,15 +130,16 @@ Routes.propTypes = {
 export default createFragmentContainer(
   Routes,
   graphql`
-    fragment Routes_state on State {
-      routes {
+    fragment Routes_route on Route {
+      rid
+      stops {
+        sid
+        lat
+        lon
         name
-        stops {
-          sid
-          lat
-          lon
-          name
-        }
+      }
+      routeStates {
+        vtime
         vehicles {
           vid
           lat
