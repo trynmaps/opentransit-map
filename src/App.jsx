@@ -28,8 +28,8 @@ class App extends Component {
                 agency
                 startTime
                 endTime
-                states {
-                  ...Map_state
+                routes {
+                  ...Map_route
                 }
               }
             }
@@ -43,7 +43,7 @@ class App extends Component {
           if (error) {
             return <div>{error.message}</div>;
           } else if (props) {
-            return <Map state={props.trynState.states[0]} />;
+            return <Map route={props.trynState.routes[0]} />;
           }
           return <div>Loading</div>;
         }}
