@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import ReactMapGL, { NavigationControl, Popup } from 'react-map-gl';
+import ReactMapGL, { NavigationControl } from 'react-map-gl';
 import {
   graphql,
   createFragmentContainer,
 } from 'react-relay';
 import propTypes from 'prop-types';
 import { MAP_STYLE, MAPBOX_ACCESS_TOKEN } from './config.json';
-import Routes from './Routes';
+import Route from './Route';
 import muniRoutesGeoJson from './res/muniRoutes.geo.json';
 import Checkbox from './Checkbox';
 
@@ -31,10 +31,6 @@ class Map extends Component {
         minPitch: 0,
         maxPitch: 85,
       },
-      popup: {
-        coordinates: { lon: 0, lat: 0 },
-        info: { vid: '', heading: 0 },
-      },
       geojson: muniRoutesGeoJson,
     };
   }
@@ -47,10 +43,6 @@ class Map extends Component {
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.updateDimensions.bind(this));
-  }
-
-  onMarkerClick(lon, lat, info) {
-    this.setState({ popup: { coordinates: { lon, lat }, info } });
   }
 
   /**
@@ -110,6 +102,10 @@ class Map extends Component {
     // I don't know what settings used for,
     // just keeping it in following format to bypass linter errors
     console.log(settings && settings);
+
+    const selectedRouteNames = new Set();
+    this.selectedRoutes
+      .forEach(route => selectedRouteNames.add(route.properties.name));
     return (
       <ReactMapGL
         {...viewport}
@@ -121,25 +117,17 @@ class Map extends Component {
           <NavigationControl onViewportChange={onViewportChange} />
         </div>
 
-        {/* React Map GL Popup component displays vehicle ID & heading info */}
-
-        <Popup
-          longitude={this.state.popup.coordinates.lon}
-          latitude={this.state.popup.coordinates.lat}
-        >
-          <div>
-            <p>ID: {this.state.popup.info.vid}</p>
-            <p>Heading: {this.state.popup.info.heading}</p>
-          </div>
-        </Popup>
-
         {/* Routes component returns DeckGL component with routes and markers layer */}
-        <Routes
-          onMarkerClick={(lon, lat, info) => this.onMarkerClick(lon, lat, info)}
-          geojson={geojson}
-          route={this.props.route}
-          viewport={viewport}
-        />
+        {console.log(this.props.trynState.routes)}
+        {this.props.trynState.routes
+          .map(route => (
+            <Route
+              geojson={geojson}
+              route={route}
+              viewport={viewport}
+              selectedRouteNames={selectedRouteNames}
+            />))
+        }
       </ReactMapGL>
     );
   }
@@ -161,7 +149,7 @@ class Map extends Component {
 }
 
 Map.propTypes = {
-  route: propTypes.shape(
+  trynState: propTypes.shape(
     propTypes.string,
     propTypes.arrayOf(propTypes.object),
   ).isRequired,
@@ -170,8 +158,13 @@ Map.propTypes = {
 export default createFragmentContainer(
   Map,
   graphql`
-    fragment Map_route on Route {
-      ...Routes_route
+    fragment Map_trynState on TrynState {
+      startTime
+      endTime
+      agency
+      routes {
+        ...Route_route
+      }
     }
   `,
 );
