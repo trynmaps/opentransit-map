@@ -25,12 +25,7 @@ class App extends Component {
         query={graphql`
             query AppAllVehiclesQuery($agency: String!, $startTime: String!, $endTime: String!) {
               trynState(agency: $agency, startTime: $startTime, endTime: $endTime) {
-                agency
-                startTime
-                endTime
-                routes {
-                  ...Map_route
-                }
+                ...Map_trynState
               }
             }
           `}
@@ -43,7 +38,9 @@ class App extends Component {
           if (error) {
             return <div>{error.message}</div>;
           } else if (props) {
-            return <Map route={props.trynState.routes[0]} />;
+            return (
+              <Map trynState={props.trynState} />
+            );
           }
           return <div>Loading</div>;
         }}
