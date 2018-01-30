@@ -70,22 +70,6 @@ class Map extends Component {
     });
   }
 
-  createCheckbox(route) {
-    return (
-      <Checkbox
-        route={route}
-        label={route.properties.name}
-        handleCheckboxChange={checkedRoute => this.filterRoutes(checkedRoute)}
-        key={route.properties.name}
-      />
-    );
-  }
-
-  createAllGeoJsonLayerCheckboxes() {
-    const result = muniRoutesGeoJson.features.map(i => this.createCheckbox(i));
-    return result;
-  }
-
   filterRoutes(route) {
     if (this.selectedRoutes.has(route)) {
       this.selectedRoutes.delete(route);
@@ -96,7 +80,7 @@ class Map extends Component {
       features: Array.from(this.selectedRoutes),
       type: 'FeatureCollection',
     };
-    this.state.geojson = newGeojson;
+    this.setState({ geojson: newGeojson });
   }
 
   renderControlPanel() {
@@ -106,7 +90,14 @@ class Map extends Component {
           <h3>Routes</h3>
         </div>
         <ul className="route-checkboxes">
-          {this.createAllGeoJsonLayerCheckboxes()}
+          {muniRoutesGeoJson.features.map(route => (
+            <Checkbox
+              route={route}
+              label={route.properties.name}
+              handleCheckboxChange={checkedRoute => this.filterRoutes(checkedRoute)}
+              key={route.properties.name}
+            />
+          ))}
         </ul>
       </div>
     );
