@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
-import ReactMapGL, { NavigationControl } from 'react-map-gl';
+import ReactMapGL, { NavigationControl, Popup } from 'react-map-gl';
+import DeckGL from 'deck.gl';
 import {
   graphql,
   createFragmentContainer,
 } from 'react-relay';
 import propTypes from 'prop-types';
 import { MAP_STYLE, MAPBOX_ACCESS_TOKEN } from './config.json';
-import Route from './Route';
+import {
+  getStopMarkersLayer,
+  getRoutesLayer,
+  getVehicleMarkersLayer,
+} from './Route';
 import muniRoutesGeoJson from './res/muniRoutes.geo.json';
 import Checkbox from './Checkbox';
 
@@ -31,7 +36,10 @@ class Map extends Component {
         minPitch: 0,
         maxPitch: 85,
       },
-      geojson: muniRoutesGeoJson,
+      popup: {
+        coordinates: { lon: 0, lat: 0 },
+        info: { vid: '', heading: 0 },
+      },
     };
   }
 
@@ -60,6 +68,21 @@ class Map extends Component {
         bearing: 0,
       },
     });
+  }
+
+  displayVehicleInfo(info) {
+    /* calls parent' onMarkerClick function to show pop-up to display vehicle id & heading info */
+    if (info && info.object && info.object.vid && info.object.heading) {
+      this.setState({
+        popup: {
+          coordinates: {
+            lon: info.lngLat[0],
+            lat: info.lngLat[1],
+          },
+          info: info.object,
+        },
+      });
+    }
   }
 
   filterRoutes(route) {
@@ -106,6 +129,15 @@ class Map extends Component {
     const selectedRouteNames = new Set();
     this.selectedRoutes
       .forEach(route => selectedRouteNames.add(route.properties.name));
+    const routeLayers = this.props.trynState.routes
+      .filter(route => selectedRouteNames.has(route.rid))
+      .reduce((layers, route) => [
+        ...layers,
+        getStopMarkersLayer(route),
+        getRoutesLayer(geojson),
+        getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
+      ], []);
+
     return (
       <ReactMapGL
         {...viewport}
@@ -117,17 +149,23 @@ class Map extends Component {
           <NavigationControl onViewportChange={onViewportChange} />
         </div>
 
-        {/* Routes component returns DeckGL component with routes and markers layer */}
-        {console.log(this.props.trynState.routes)}
-        {this.props.trynState.routes
-          .map(route => (
-            <Route
-              geojson={geojson}
-              route={route}
-              viewport={viewport}
-              selectedRouteNames={selectedRouteNames}
-            />))
-        }
+        {/* React Map GL Popup component displays vehicle ID & heading info */}
+        {this.state.popup.coordinates ? (
+          <Popup
+            longitude={this.state.popup.coordinates.lon}
+            latitude={this.state.popup.coordinates.lat}
+            onClose={() => this.setState({ popup: {} })}
+          >
+            <div>
+              <p>ID: {this.state.popup.info.vid}</p>
+              <p>Heading: {this.state.popup.info.heading}</p>
+            </div>
+          </Popup>) : null}
+
+        <DeckGL
+          {...viewport}
+          layers={routeLayers}
+        />
       </ReactMapGL>
     );
   }
@@ -163,7 +201,22 @@ export default createFragmentContainer(
       endTime
       agency
       routes {
-        ...Route_route
+        rid
+        stops {
+          sid
+          lat
+          lon
+          name
+        }
+        routeStates {
+          vtime
+          vehicles {
+            vid
+            lat
+            lon
+            heading
+          }
+        }
       }
     }
   `,

@@ -39,7 +39,7 @@ class Checkbox extends Component {
 
 Checkbox.propTypes = {
   label: PropTypes.string.isRequired,
-  route: PropTypes.string.isRequired,
+  route: PropTypes.shape().isRequired,
   handleCheckboxChange: PropTypes.func.isRequired,
 };
 
