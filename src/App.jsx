@@ -1,14 +1,22 @@
 import 'bootstrap/dist/css/bootstrap.css';
+import 'react-widgets/dist/css/react-widgets.css';
 
 import React, { Component } from 'react';
 import {
   QueryRenderer,
   graphql,
 } from 'react-relay';
+import Moment from 'moment/moment';
+import momentLocalizer from 'react-widgets-moment';
 import Map from './Map';
 import './styles/App.css';
 import './styles/Zoom.css';
 import environment from './relayEnv';
+
+// needed to render DateTime component
+// https://jquense.github.io/react-widgets/localization/
+Moment.locale('en');
+momentLocalizer();
 
 class App extends Component {
   constructor() {
@@ -24,9 +32,7 @@ class App extends Component {
         environment={this.state.environment}
         query={graphql`
             query AppAllVehiclesQuery($agency: String!, $startTime: String!, $endTime: String!) {
-              trynState(agency: $agency, startTime: $startTime, endTime: $endTime) {
-                ...Map_trynState
-              }
+              ...Map_trynState
             }
           `}
         variables={{
@@ -39,7 +45,7 @@ class App extends Component {
             return <div>{error.message}</div>;
           } else if (props) {
             return (
-              <Map trynState={props.trynState} />
+              <Map trynState={props} />
             );
           }
           return <div>Loading</div>;

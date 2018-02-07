@@ -3,9 +3,10 @@ import ReactMapGL, { NavigationControl, Popup } from 'react-map-gl';
 import DeckGL from 'deck.gl';
 import {
   graphql,
-  createFragmentContainer,
+  createRefetchContainer,
 } from 'react-relay';
 import propTypes from 'prop-types';
+import { DateTimePicker } from 'react-widgets';
 import { MAP_STYLE, MAPBOX_ACCESS_TOKEN } from './config.json';
 import {
   getStopMarkersLayer,
@@ -40,6 +41,7 @@ class Map extends Component {
         coordinates: { lon: 0, lat: 0 },
         info: { vid: '', heading: 0 },
       },
+      currentStateTime: new Date(Date.now()),
     };
   }
 
@@ -51,6 +53,24 @@ class Map extends Component {
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.updateDimensions.bind(this));
+  }
+
+  setNewStateTime(newStateTime) {
+    this.setState({ currentStateTime: newStateTime });
+    this.props.relay.refetch(
+      {
+        startTime: Number(newStateTime) - 15000,
+        endTime: Number(newStateTime),
+        agency: 'muni',
+      },
+      null,
+      (err) => {
+        if (err) {
+          console.log(err);
+        }
+      },
+      { force: true },
+    );
   }
 
   /**
@@ -102,6 +122,13 @@ class Map extends Component {
     return (
       <div className="control-panel">
         <div className="routes-header">
+          <h3>State</h3>
+          <DateTimePicker
+            value={this.state.currentStateTime}
+            onChange={newTime => this.setNewStateTime(newTime)}
+          />
+        </div>
+        <div className="routes-header">
           <h3>Routes</h3>
         </div>
         <ul className="route-checkboxes">
@@ -120,8 +147,9 @@ class Map extends Component {
 
   renderMap() {
     const onViewportChange = viewport => this.setState({ viewport });
-
+    const { trynState } = this.props.trynState;
     const { viewport, settings, geojson } = this.state;
+
     // I don't know what settings used for,
     // just keeping it in following format to bypass linter errors
     console.log(settings && settings);
@@ -129,7 +157,7 @@ class Map extends Component {
     const selectedRouteNames = new Set();
     this.selectedRoutes
       .forEach(route => selectedRouteNames.add(route.properties.name));
-    const routeLayers = this.props.trynState.routes
+    const routeLayers = trynState.routes
       .filter(route => selectedRouteNames.has(route.rid))
       .reduce((layers, route) => [
         ...layers,
@@ -191,33 +219,41 @@ Map.propTypes = {
     propTypes.string,
     propTypes.arrayOf(propTypes.object),
   ).isRequired,
+  relay: propTypes.element.isRequired,
 };
 
-export default createFragmentContainer(
+export default createRefetchContainer(
   Map,
   graphql`
-    fragment Map_trynState on TrynState {
-      startTime
-      endTime
-      agency
-      routes {
-        rid
-        stops {
-          sid
-          lat
-          lon
-          name
-        }
-        routeStates {
-          vtime
-          vehicles {
-            vid
+    fragment Map_trynState on Query {
+      trynState(agency: $agency, startTime: $startTime, endTime: $endTime){
+        startTime
+        endTime
+        agency
+        routes {
+          rid
+          stops {
+            sid
             lat
             lon
-            heading
+            name
+          }
+          routeStates {
+            vtime
+            vehicles {
+              vid
+              lat
+              lon
+              heading
+            }
           }
         }
       }
+    }
+  `,
+  graphql`
+    query Map_UpdateStateQuery($agency: String!, $startTime: String!, $endTime: String!) {
+      ...Map_trynState
     }
   `,
 );
