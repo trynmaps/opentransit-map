@@ -7,6 +7,7 @@ import {
 } from 'react-relay';
 import propTypes from 'prop-types';
 import { DateTimePicker } from 'react-widgets';
+import Toggle from 'react-toggle';
 import { MAP_STYLE, MAPBOX_ACCESS_TOKEN } from './config.json';
 import {
   getStopMarkersLayer,
@@ -42,6 +43,7 @@ class Map extends Component {
         info: { vid: '', heading: 0 },
       },
       currentStateTime: new Date(Date.now()),
+      showStops: true,
     };
   }
 
@@ -122,10 +124,17 @@ class Map extends Component {
     return (
       <div className="control-panel">
         <div className="routes-header">
-          <h3>State</h3>
+          <h3>Time</h3>
           <DateTimePicker
             value={this.state.currentStateTime}
             onChange={newTime => this.setNewStateTime(newTime)}
+          />
+        </div>
+        <div className="routes-header stops-toggle">
+          <h3>Stops</h3>
+          <Toggle
+            defaultChecked={this.state.showStops}
+            onChange={() => this.setState({ showStops: !this.state.showStops })}
           />
         </div>
         <div className="routes-header">
@@ -161,7 +170,7 @@ class Map extends Component {
       .filter(route => selectedRouteNames.has(route.rid))
       .reduce((layers, route) => [
         ...layers,
-        getStopMarkersLayer(route),
+        this.state.showStops ? getStopMarkersLayer(route) : null,
         getRoutesLayer(geojson),
         getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
       ], []);
