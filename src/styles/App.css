@@ -63,8 +63,12 @@ body {
 }
 
 .routes-header {
-  margin-top: 10px;
+  margin-top: 15px;
   color: #FFFFFF;
+}
+
+.stops-toggle {
+  margin-bottom: -8px;
 }
 
 ul.route-checkboxes {
