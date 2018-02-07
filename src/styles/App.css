@@ -49,6 +49,7 @@ body {
   position: fixed;
   top: 0;
   bottom: 0;
+  min-width: 300px;
   overflow-y: scroll;
   background-color: #2C445B;
 }
@@ -62,6 +63,7 @@ body {
 }
 
 .routes-header {
+  margin-top: 10px;
   color: #FFFFFF;
 }
 
