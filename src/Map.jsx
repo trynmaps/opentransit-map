@@ -80,15 +80,10 @@ class Map extends Component {
    */
   updateDimensions() {
     this.setState({
-      viewport: {
+      viewport: Object.assign(this.state.viewport, {
         width: window.innerWidth,
         height: window.innerHeight,
-        longitude: -122.41669,
-        latitude: 37.7853,
-        zoom: 15,
-        pitch: 0,
-        bearing: 0,
-      },
+      }),
     });
   }
 
