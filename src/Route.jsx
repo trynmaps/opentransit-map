@@ -2,6 +2,8 @@ import { GeoJsonLayer, IconLayer } from 'deck.gl';
 
 // Icon Layer atlas icon
 const atlasIcon = require('./res/icon-atlas.png');
+const busIconWest = require('./res/icon-bus-west.png');
+const busIconEast = require('./res/icon-bus-east.png');
 
 const ICON_MAPPING = {
   marker: {
@@ -41,22 +43,28 @@ export function getRoutesLayer(geojson) {
   }));
 }
 
-export function getVehicleMarkersLayer(route, displayVehicleInfo) {
+export function getVehicleMarkersLayer(route, displayVehicleInfo, angleDir) {
   /* returns new DeckGL Icon Layer displaying all vehicles on given routes */
-  const data = route.routeStates[0].vehicles.map(vehicle => ({
-    position: [vehicle.lon, vehicle.lat],
-    icon: 'marker',
-    size: 72,
-    color: [0, 0, 255],
-    // added vid & heading info to display onClick pop-up
-    vid: vehicle.vid,
-    heading: vehicle.heading,
-  }));
+  const data = route.routeStates[0].vehicles.reduce((callback, vehicle) => {
+    if (Math.abs(angleDir - vehicle.heading) < 90) {
+      callback.push({
+        position: [vehicle.lon, vehicle.lat],
+        icon: 'marker',
+        size: 128,
+        angle: angleDir - vehicle.heading,
+        color: [0, 0, 255],
+        // added vid & heading info to display onClick pop-up
+        vid: vehicle.vid,
+        heading: vehicle.heading,
+      });
+    }
+    return callback;
+  }, []);
 
   return (new IconLayer({
     id: 'vehicle-icon-layer',
     data,
-    iconAtlas: atlasIcon,
+    iconAtlas: (angleDir === 270) ? busIconWest : busIconEast,
     iconMapping: ICON_MAPPING,
     pickable: true,
     // calls pop-up function
