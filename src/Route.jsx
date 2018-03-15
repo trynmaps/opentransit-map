@@ -43,31 +43,58 @@ export function getRoutesLayer(geojson) {
   }));
 }
 
-export function getVehicleMarkersLayer(route, displayVehicleInfo, angleDir) {
+export function getVehicleMarkersLayer(route, displayVehicleInfo) {
   /* returns new DeckGL Icon Layer displaying all vehicles on given routes */
-  const data = route.routeStates[0].vehicles.reduce((callback, vehicle) => {
-    if (Math.abs(angleDir - vehicle.heading) < 90) {
-      callback.push({
+  const westData = route.routeStates[0].vehicles.reduce((westBus, vehicle) => {
+    if (vehicle.heading >= 180) {
+      westBus.push({
         position: [vehicle.lon, vehicle.lat],
         icon: 'marker',
         size: 128,
-        angle: angleDir - vehicle.heading,
+        angle: 270 - vehicle.heading,
         color: [0, 0, 255],
         // added vid & heading info to display onClick pop-up
         vid: vehicle.vid,
         heading: vehicle.heading,
       });
     }
-    return callback;
+    return westBus;
   }, []);
 
-  return (new IconLayer({
-    id: 'vehicle-icon-layer',
-    data,
-    iconAtlas: (angleDir === 270) ? busIconWest : busIconEast,
-    iconMapping: ICON_MAPPING,
-    pickable: true,
-    // calls pop-up function
-    onClick: info => displayVehicleInfo(info),
-  }));
+  const eastData = route.routeStates[0].vehicles.reduce((eastBus, vehicle) => {
+    if (vehicle.heading < 180) {
+      eastBus.push({
+        position: [vehicle.lon, vehicle.lat],
+        icon: 'marker',
+        size: 128,
+        angle: 90 - vehicle.heading,
+        color: [0, 0, 255],
+        // added vid & heading info to display onClick pop-up
+        vid: vehicle.vid,
+        heading: vehicle.heading,
+      });
+    }
+    return eastBus;
+  }, []);
+
+  return {
+    westBus: new IconLayer({
+      id: 'west-vehicle-icon-layer',
+      data: westData,
+      iconAtlas: busIconWest,
+      iconMapping: ICON_MAPPING,
+      pickable: true,
+      // calls pop-up function
+      onClick: info => displayVehicleInfo(info),
+    }),
+    eastBus: new IconLayer({
+      id: 'east-vehicle-icon-layer',
+      data: eastData,
+      iconAtlas: busIconEast,
+      iconMapping: ICON_MAPPING,
+      pickable: true,
+      // calls pop-up function
+      onClick: info => displayVehicleInfo(info),
+    }),
+  };
 }

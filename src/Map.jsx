@@ -167,9 +167,9 @@ class Map extends Component {
         ...layers,
         this.state.showStops ? getStopMarkersLayer(route) : null,
         getRoutesLayer(geojson),
-        // 270 is the angle for west bound trains, 90 for east
-        getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info), 270),
-        getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info), 90),
+        // returns 2 iconLayer lists - one for east and one for west
+        getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)).westBus,
+        getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)).eastBus,
       ], []);
 
     return (
