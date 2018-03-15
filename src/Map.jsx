@@ -167,7 +167,7 @@ class Map extends Component {
         ...layers,
         this.state.showStops ? getStopMarkersLayer(route) : null,
         getRoutesLayer(geojson),
-        getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
+        ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
       ], []);
 
     return (
