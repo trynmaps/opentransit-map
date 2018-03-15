@@ -167,9 +167,7 @@ class Map extends Component {
         ...layers,
         this.state.showStops ? getStopMarkersLayer(route) : null,
         getRoutesLayer(geojson),
-        // returns 2 iconLayer lists - one for east and one for west
-        getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)).westBus,
-        getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)).eastBus,
+        ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
       ], []);
 
     return (

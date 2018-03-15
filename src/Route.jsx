@@ -77,8 +77,8 @@ export function getVehicleMarkersLayer(route, displayVehicleInfo) {
     return eastBus;
   }, []);
 
-  return {
-    westBus: new IconLayer({
+  return [
+    new IconLayer({
       id: 'west-vehicle-icon-layer',
       data: westData,
       iconAtlas: busIconWest,
@@ -87,7 +87,7 @@ export function getVehicleMarkersLayer(route, displayVehicleInfo) {
       // calls pop-up function
       onClick: info => displayVehicleInfo(info),
     }),
-    eastBus: new IconLayer({
+    new IconLayer({
       id: 'east-vehicle-icon-layer',
       data: eastData,
       iconAtlas: busIconEast,
@@ -96,5 +96,5 @@ export function getVehicleMarkersLayer(route, displayVehicleInfo) {
       // calls pop-up function
       onClick: info => displayVehicleInfo(info),
     }),
-  };
+  ];
 }
