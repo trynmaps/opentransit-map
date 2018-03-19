@@ -14,7 +14,7 @@ function fetchQuery(
   // cacheConfig,
   // uploadables,
 ) {
-  return fetch(API_URL, {
+  return fetch(API_URL || 'http://localhost:4000/graphql', {
     method: 'POST',
     headers: {
       // Add authentication and other headers here
