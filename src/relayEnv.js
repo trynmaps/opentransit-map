@@ -4,6 +4,7 @@ const {
   RecordSource,
   Store,
 } = require('relay-runtime');
+const { API_URL } = require('./config.json');
 
 // Define a function that fetches the results of an operation (query/mutation/etc)
 // and returns its results as a Promise:
@@ -13,7 +14,7 @@ function fetchQuery(
   // cacheConfig,
   // uploadables,
 ) {
-  return fetch('http://localhost:4000/graphql', {
+  return fetch(API_URL || 'http://localhost:4000/graphql', {
     method: 'POST',
     headers: {
       // Add authentication and other headers here
