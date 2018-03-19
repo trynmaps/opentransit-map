@@ -27,7 +27,7 @@ class Map extends Component {
         height: window.innerHeight,
         longitude: -122.41669,
         latitude: 37.7853,
-        zoom: 15,
+        zoom: 13,
         pitch: 0,
         bearing: 0,
       },
@@ -152,6 +152,7 @@ class Map extends Component {
   renderMap() {
     const onViewportChange = viewport => this.setState({ viewport });
     const { trynState } = this.props.trynState;
+    const { routes } = trynState || {};
     const { viewport, settings, geojson } = this.state;
 
     // I don't know what settings used for,
@@ -161,7 +162,7 @@ class Map extends Component {
     const selectedRouteNames = new Set();
     this.selectedRoutes
       .forEach(route => selectedRouteNames.add(route.properties.name));
-    const routeLayers = trynState.routes
+    const routeLayers = (routes || [])
       .filter(route => selectedRouteNames.has(route.rid))
       .reduce((layers, route) => [
         ...layers,
