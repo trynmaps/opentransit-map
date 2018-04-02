@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ReactMapGL, { NavigationControl, Popup } from 'react-map-gl';
 import DeckGL from 'deck.gl';
+import update from 'immutability-helper';
 import {
   graphql,
   createRefetchContainer,
@@ -42,6 +43,13 @@ class Map extends Component {
         coordinates: { lon: 0, lat: 0 },
         info: { vid: '', heading: 0 },
       },
+      stopInfo: {
+        firstStop: {},
+        secondStop: {},
+        isFirstStpChosen() { return !(Object.getOwnPropertyNames(this.firstStop).length === 0); },
+        isSecondStpChosen() { return !(Object.getOwnPropertyNames(this.secondStop).length === 0); },
+        canCreateRoute() { return this.isFirstStopSelected() && this.isSecondStopSelected(); },
+      },
       currentStateTime: new Date(Date.now()),
       showStops: true,
     };
@@ -74,7 +82,40 @@ class Map extends Component {
       { force: true },
     );
   }
+  getStopInfo(route, info) {
+    let sInfo = {};
+    if (!this.state.stopInfo.isFirstStpChosen()) {
+      sInfo = update(this.state.stopInfo, { firstStop: { $set: info } });
+      const station = this.findStationID(route, info);
+      console.log(`First Stop ID: ${station.sid}`);
+    } else if (this.isSameStop(info, this.state.stopInfo.firstStop)) {
+      sInfo = update(this.state.stopInfo, { firstStop: { $set: {} } });
+    } else if (!this.state.stopInfo.isSecondStpChosen()) {
+      sInfo = update(this.state.stopInfo, { secondStop: { $set: info } });
+      const station = this.findStationID(route, info);
+      console.log(`Second Stop ID: ${station.sid}`);
+    } else if (this.isSameStop(info, this.state.stopInfo.secondStop)) {
+      sInfo = update(this.state.stopInfo, { secondStop: { $set: {} } });
+    } else if (this.state.stopInfo.isFirstStpChosen() && this.state.stopInfo.isSecondStpChosen()) {
+      const station = this.findStationID(route, info);
+      console.log(`First Stop ID: ${station.sid}`);
+      sInfo = update(this.state.stopInfo, { firstStop: { $set: info }, secondStop: { $set: {} } });
+    }
+    this.setState({ stopInfo: sInfo });
+  }
 
+  isSameStop(frstStop, scndStop) {
+    console.log(this);
+    const frstStpPosition = frstStop.object.position;
+    const scndStpPosition = scndStop.object.position;
+    return frstStpPosition[0] === scndStpPosition[0] && frstStpPosition[1] === scndStpPosition[1];
+  }
+  findStationID(route, stopInfo) {
+    console.log(this);
+    const stopLoc = stopInfo.object.position;
+    const station = route.stops.filter(c => c.lon === stopLoc[0] && c.lat === stopLoc[1]);
+    return station[0];
+  }
   /**
    * Calculate & Update state of new dimensions
    */
@@ -166,7 +207,7 @@ class Map extends Component {
       .filter(route => selectedRouteNames.has(route.rid))
       .reduce((layers, route) => [
         ...layers,
-        this.state.showStops ? getStopMarkersLayer(route) : null,
+        this.state.showStops ? getStopMarkersLayer(route, i => this.getStopInfo(route, i)) : null,
         getRoutesLayer(geojson),
         ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
       ], []);
