@@ -78,26 +78,25 @@ class Map extends Component {
 
   getStopInfo(route, stopCoordinates) {
     let stops = this.state.selectedStops;
-    if (stops.length === 0) {
-      stops.push(stopCoordinates);
-      const station = this.findStationID(route, stopCoordinates);
-      console.log(`First Stop ID: ${station.sid}`);
-    } else if (stops.length === 1 && stops[0] !== stopCoordinates) {
-      stops.push(stopCoordinates);
-      const station = this.findStationID(route, stopCoordinates);
-      console.log(`Second Stop ID: ${station.sid}`);
-    } else {
+    const station = this.findStationID(route, stopCoordinates);
+    const stopInfo = Object.assign({}, stopCoordinates);
+    stopInfo.sid = station.sid;
+    if (stops.length > 1) {
       stops = [];
-      stops.push(stopCoordinates);
-      const station = this.findStationID(route, stopCoordinates);
-      console.log(`First Stop ID: ${station.sid}`);
+    }
+    if (stops.length === 0
+      || (stops.length === 1 && stops[0] !== stopCoordinates)) {
+      console.log(`Stop Sid: ${stopInfo.sid}`);
+      stops.push(stopInfo);
     }
     this.setState({ selectedStops: stops });
   }
 
-  findStationID(route, stopCoord) {
+  findStationID(route, stopCoordinate) {
     console.log(this);
-    const index = route.stops.findIndex(c => c.lon === stopCoord[0] && c.lat === stopCoord[1]);
+    const index
+    = route.stops.findIndex(currentStop => currentStop.lon === stopCoordinate[0]
+     && currentStop.lat === stopCoordinate[1]);
     return route.stops[index];
   }
   /**
