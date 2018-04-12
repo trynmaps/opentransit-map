@@ -78,7 +78,10 @@ class Map extends Component {
 
   getStopInfo(route, stopCoordinates) {
     let stops = this.state.selectedStops;
-    const station = this.findStationID(route, stopCoordinates);
+    const index
+    = route.stops.findIndex(currentStop => currentStop.lon === stopCoordinates[0]
+    && currentStop.lat === stopCoordinates[1]);
+    const station = route.stops[index];
     const stopInfo = Object.assign({}, stopCoordinates);
     stopInfo.sid = station.sid;
     if (stops.length > 1) {
@@ -90,14 +93,6 @@ class Map extends Component {
       stops.push(stopInfo);
     }
     this.setState({ selectedStops: stops });
-  }
-
-  findStationID(route, stopCoordinate) {
-    console.log(this);
-    const index
-    = route.stops.findIndex(currentStop => currentStop.lon === stopCoordinate[0]
-     && currentStop.lat === stopCoordinate[1]);
-    return route.stops[index];
   }
   /**
    * Calculate & Update state of new dimensions
