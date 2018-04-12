@@ -42,6 +42,7 @@ class Map extends Component {
         coordinates: { lon: 0, lat: 0 },
         info: { vid: '', heading: 0 },
       },
+      selectedStops: [],
       currentStateTime: new Date(Date.now()),
       showStops: true,
     };
@@ -75,6 +76,23 @@ class Map extends Component {
     );
   }
 
+  getStopInfo(route, stopCoordinates) {
+    let stops = this.state.selectedStops;
+    const station
+    = route.stops.find(currentStop => currentStop.lon === stopCoordinates[0]
+    && currentStop.lat === stopCoordinates[1]);
+    const stopInfo = Object.assign({}, stopCoordinates);
+    stopInfo.sid = station.sid;
+    if (stops.length > 1) {
+      stops = [];
+    }
+    if (stops.length === 0
+      || (stops.length === 1 && stops[0] !== stopCoordinates)) {
+      console.log(`Stop Sid: ${stopInfo.sid}`);
+      stops.push(stopInfo);
+    }
+    this.setState({ selectedStops: stops });
+  }
   /**
    * Calculate & Update state of new dimensions
    */
@@ -166,7 +184,9 @@ class Map extends Component {
       .filter(route => selectedRouteNames.has(route.rid))
       .reduce((layers, route) => [
         ...layers,
-        this.state.showStops ? getStopMarkersLayer(route) : null,
+        this.state.showStops
+          ? getStopMarkersLayer(route, marker => this.getStopInfo(route, marker.object.position))
+          : null,
         getRoutesLayer(geojson),
         ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
       ], []);
