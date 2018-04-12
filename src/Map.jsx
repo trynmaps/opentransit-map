@@ -78,10 +78,9 @@ class Map extends Component {
 
   getStopInfo(route, stopCoordinates) {
     let stops = this.state.selectedStops;
-    const index
-    = route.stops.findIndex(currentStop => currentStop.lon === stopCoordinates[0]
+    const station
+    = route.stops.find(currentStop => currentStop.lon === stopCoordinates[0]
     && currentStop.lat === stopCoordinates[1]);
-    const station = route.stops[index];
     const stopInfo = Object.assign({}, stopCoordinates);
     stopInfo.sid = station.sid;
     if (stops.length > 1) {
