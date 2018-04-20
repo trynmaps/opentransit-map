@@ -45,58 +45,52 @@ export function getRoutesLayer(geojson) {
   }));
 }
 
+/* return east/west vehicle data in layer data format */
+function formatVehicleData(allVehicles, filterFunc) {
+  return allVehicles.filter(filterFunc).reduce((vehicles, vehicle) => [...vehicles, {
+    position: [vehicle.lon, vehicle.lat],
+    icon: 'marker',
+    size: 128,
+    angle: 270 - vehicle.heading,
+    color: [0, 0, 255],
+    // added vid & heading info to display onClick pop-up
+    vid: vehicle.vid,
+    heading: vehicle.heading,
+  }], []);
+}
+
+/* return icon layer for west/east busses */
+function formatIconLayer({ id, data, iconAtlas }) {
+  return new IconLayer({
+    id,
+    data,
+    iconAtlas,
+    iconMapping: ICON_MAPPING,
+    pickable: true,
+    // calls pop-up function
+    onClick: info => displayVehicleInfo(info),
+  });
+}
+
 export function getVehicleMarkersLayer(route, displayVehicleInfo) {
   /* returns new DeckGL Icon Layer displaying all vehicles on given routes */
-  const westData = route.routeStates[0].vehicles.reduce((westBus, vehicle) => {
-    if (vehicle.heading >= 180) {
-      westBus.push({
-        position: [vehicle.lon, vehicle.lat],
-        icon: 'marker',
-        size: 128,
-        angle: 270 - vehicle.heading,
-        color: [0, 0, 255],
-        // added vid & heading info to display onClick pop-up
-        vid: vehicle.vid,
-        heading: vehicle.heading,
-      });
-    }
-    return westBus;
-  }, []);
-
-  const eastData = route.routeStates[0].vehicles.reduce((eastBus, vehicle) => {
-    if (vehicle.heading < 180) {
-      eastBus.push({
-        position: [vehicle.lon, vehicle.lat],
-        icon: 'marker',
-        size: 128,
-        angle: 90 - vehicle.heading,
-        color: [0, 0, 255],
-        // added vid & heading info to display onClick pop-up
-        vid: vehicle.vid,
-        heading: vehicle.heading,
-      });
-    }
-    return eastBus;
-  }, []);
-
+  const allVehicles = route.routeStates[0].vehicles;
+  const westFilterFunc = vehicle => vehicle.heading >= 180;
+  const eastFilterFunc = vehicle => vehicle.heading < 180;
+  const westData = formatVehicleData(allVehicles, westFilterFunc);
+  const eastData = formatVehicleData(allVehicles, eastFilterFunc);
+  const westIconLayerOptions = {
+    id: 'west-vehicle-icon-layer',
+    data: westData,
+    iconAtlas: busIconWest,
+  };
+  const eastIconLayerOptions = {
+    id: 'east-vehicle-icon-layer',
+    data: eastData,
+    iconAtlas: busIconEast,
+  };
   return [
-    new IconLayer({
-      id: 'west-vehicle-icon-layer',
-      data: westData,
-      iconAtlas: busIconWest,
-      iconMapping: ICON_MAPPING,
-      pickable: true,
-      // calls pop-up function
-      onClick: info => displayVehicleInfo(info),
-    }),
-    new IconLayer({
-      id: 'east-vehicle-icon-layer',
-      data: eastData,
-      iconAtlas: busIconEast,
-      iconMapping: ICON_MAPPING,
-      pickable: true,
-      // calls pop-up function
-      onClick: info => displayVehicleInfo(info),
-    }),
+    formatIconLayer(westIconLayerOptions),
+    formatIconLayer(eastIconLayerOptions),
   ];
 }
