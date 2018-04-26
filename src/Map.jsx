@@ -76,7 +76,8 @@ class Map extends Component {
     );
   }
 
-  getStopInfo(route, stopCoordinates) {
+  getStopInfo(route, marker) {
+    const stopCoordinates = marker.object.position;
     let stops = this.state.selectedStops;
     const station
     = route.stops.find(currentStop => currentStop.lon === stopCoordinates[0]
@@ -185,7 +186,9 @@ class Map extends Component {
       .reduce((layers, route) => [
         ...layers,
         this.state.showStops
-          ? getStopMarkersLayer(route, marker => this.getStopInfo(route, marker.object.position))
+        // getStopMarkersLayer(route,
+        // marker => this.getStopInfo(route, marker.object.position), this.state.selectedStops)
+          ? getStopMarkersLayer(route, m => this.getStopInfo(route, m), this.state.selectedStops)
           : null,
         getRoutesLayer(geojson),
         ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
