@@ -4,7 +4,7 @@ const {
   RecordSource,
   Store,
 } = require('relay-runtime');
-const { API_URL } = require('./config.json');
+const { LOCAL_API_URL, PROD_API_URL, USE_PROD_ENDPOINT } = require('./envEndpoints.json');
 
 // Define a function that fetches the results of an operation (query/mutation/etc)
 // and returns its results as a Promise:
@@ -14,7 +14,7 @@ function fetchQuery(
   // cacheConfig,
   // uploadables,
 ) {
-  return fetch(API_URL || 'http://localhost:4000/graphql', {
+  return fetch(USE_PROD_ENDPOINT ? PROD_API_URL : LOCAL_API_URL, {
     method: 'POST',
     headers: {
       // Add authentication and other headers here
