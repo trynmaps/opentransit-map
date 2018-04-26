@@ -1,0 +1,5 @@
+{
+  "LOCAL_API_URL": "http://localhost:4000/graphql",
+  "PROD_API_URL": "http://35.192.24.65/graphql",
+  "USE_PROD_ENDPOINT": true
+}
