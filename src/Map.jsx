@@ -186,8 +186,6 @@ class Map extends Component {
       .reduce((layers, route) => [
         ...layers,
         this.state.showStops
-        // getStopMarkersLayer(route,
-        // marker => this.getStopInfo(route, marker.object.position), this.state.selectedStops)
           ? getStopMarkersLayer(
             route,
             marker => this.getStopInfo(route, marker.object.position), this.state.selectedStops,
