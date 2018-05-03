@@ -188,7 +188,10 @@ class Map extends Component {
         this.state.showStops
         // getStopMarkersLayer(route,
         // marker => this.getStopInfo(route, marker.object.position), this.state.selectedStops)
-          ? getStopMarkersLayer(route, m => this.getStopInfo(route, m), this.state.selectedStops)
+          ? getStopMarkersLayer(
+            route,
+            marker => this.getStopInfo(route, marker.object.position), this.state.selectedStops,
+          )
           : null,
         getRoutesLayer(geojson),
         ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
