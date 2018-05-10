@@ -75,7 +75,20 @@ class Map extends Component {
       { force: true },
     );
   }
-
+  getStopsWithSid(route){
+    const stops = this.state.selectedStops;
+    const indexes = route.stops.map((stop,index) => {
+        if(stop.sid.includes(stops.sid)){
+          return index;
+        }
+      });
+    const routeSegment = route.stops.map((stop,index) => {
+        if(index>=indexes[0] && index < indexes[1]){
+          return stop;
+        }
+      });
+    return routeSegment;
+  }
   getStopInfo(route, stopCoordinates) {
     let stops = this.state.selectedStops;
     const station
@@ -91,7 +104,11 @@ class Map extends Component {
       console.log(`Stop Sid: ${stopInfo.sid}`);
       stops.push(stopInfo);
     }
+    
     this.setState({ selectedStops: stops });
+    if(stops.length === 2) {
+      routeSegment = this.getStopsWithSid(route);
+    }
   }
   /**
    * Calculate & Update state of new dimensions
