@@ -76,8 +76,7 @@ class Map extends Component {
     );
   }
 
-  getStopInfo(route, marker) {
-    const stopCoordinates = marker.object.position;
+  getStopInfo(route, stopCoordinates) {
     let stops = this.state.selectedStops;
     const station
     = route.stops.find(currentStop => currentStop.lon === stopCoordinates[0]

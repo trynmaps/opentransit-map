@@ -15,7 +15,7 @@ const ICON_MAPPING = {
 function selectedStopColor(stop, selectedStops) {
   const selectedStopsIds
   = selectedStops.map(currentstop => currentstop.sid);
-  if (selectedStopsIds.contains(stop.sid)) {
+  if (selectedStopsIds.includes(stop.sid)) {
     return [0, 255, 0];
   }
   return [255, 0, 0];
