@@ -77,9 +77,11 @@ class Map extends Component {
   }
   getStopsWithSid(route) {
     const stops = this.state.selectedStops;
-    const fistIndex = route.stops.findIndex(stop => stop.sid === stops[0].sid);
-    const secondIndex = route.stops.findIndex(stop => stop.sid === stops[1].sid);
-    return route.stops.filter((stop, index) => index >= fistIndex && index <= secondIndex);
+    const indexArray = [];
+    indexArray.push(route.stops.findIndex(stop => stop.sid === stops[0].sid));
+    indexArray.push(route.stops.findIndex(stop => stop.sid === stops[1].sid));
+    indexArray.sort((a, b) => a - b);
+    return route.stops.filter((stop, index) => index >= indexArray[0] && index <= indexArray[1]);
   }
   getStopInfo(route, stopCoordinates) {
     let stops = this.state.selectedStops;
@@ -98,7 +100,8 @@ class Map extends Component {
     }
     this.setState({ selectedStops: stops });
     if (stops.length === 2) {
-    // const routeSegment = this.getStopsWithSid(route);
+      const routeSegment = this.getStopsWithSid(route);
+      console.log(routeSegment);
     }
   }
   /**
