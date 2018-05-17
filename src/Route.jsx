@@ -11,7 +11,13 @@ const ICON_MAPPING = {
   },
 };
 
-export function getStopMarkersLayer(route, getStopInfo) {
+const BUS_ICON_MAPPING = {
+  marker: {
+    x: 0, y: 0, width: 128, height: 128, mask: false,
+  },
+};
+
+export function getStopMarkersLayer(route) {
   /* returns new DeckGL Icon Layer displaying all stops on given routes */
 
   // Push stop markers into data array
@@ -27,8 +33,6 @@ export function getStopMarkersLayer(route, getStopInfo) {
     data,
     iconAtlas: atlasIcon,
     iconMapping: ICON_MAPPING,
-    pickable: true,
-    onClick: info => getStopInfo(info),
   }));
 }
 
@@ -84,7 +88,7 @@ export function getVehicleMarkersLayer(route, displayVehicleInfo) {
       id: 'west-vehicle-icon-layer',
       data: westData,
       iconAtlas: busIconWest,
-      iconMapping: ICON_MAPPING,
+      iconMapping: BUS_ICON_MAPPING,
       pickable: true,
       // calls pop-up function
       onClick: info => displayVehicleInfo(info),
@@ -93,7 +97,7 @@ export function getVehicleMarkersLayer(route, displayVehicleInfo) {
       id: 'east-vehicle-icon-layer',
       data: eastData,
       iconAtlas: busIconEast,
-      iconMapping: ICON_MAPPING,
+      iconMapping: BUS_ICON_MAPPING,
       pickable: true,
       // calls pop-up function
       onClick: info => displayVehicleInfo(info),
