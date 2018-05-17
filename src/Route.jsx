@@ -42,6 +42,8 @@ export function getStopMarkersLayer(route, getStopInfo, selectedStops) {
     data,
     iconAtlas: atlasIcon,
     iconMapping: ICON_MAPPING,
+    pickable: true,
+    onClick: info => getStopInfo(info),
   }));
 }
 
