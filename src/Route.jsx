@@ -17,7 +17,16 @@ const BUS_ICON_MAPPING = {
   },
 };
 
-export function getStopMarkersLayer(route) {
+/* changes color of selected stop along a route */
+function selectedStopColor(stop, selectedStops) {
+  const selectedStopsIds
+  = selectedStops.map(currentstop => currentstop.sid);
+  if (selectedStopsIds.includes(stop.sid)) {
+    return [0, 255, 0];
+  }
+  return [255, 0, 0];
+}
+export function getStopMarkersLayer(route, getStopInfo, selectedStops) {
   /* returns new DeckGL Icon Layer displaying all stops on given routes */
 
   // Push stop markers into data array
@@ -25,7 +34,7 @@ export function getStopMarkersLayer(route) {
     position: [stop.lon, stop.lat],
     icon: 'marker',
     size: 72,
-    color: [255, 0, 0],
+    color: selectedStopColor(stop, selectedStops),
   }));
 
   return (new IconLayer({
