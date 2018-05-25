@@ -76,13 +76,17 @@ class Map extends Component {
     );
   }
   getRouteBetweenStops(route) {
-    const stops = this.state.selectedStops;
-    const indexArray = route.stops.filter((stop, index) => {
-      if (stops.includes(stop.sid)) {
-        return index;
+    const stopSids = this.state.selectedStops.map(stop => stop.sid);
+    const routeStops = route.stops;
+    const indexArray = [];
+    for (let i = 0; i < routeStops.length; i += 1) {
+      if (stopSids.includes(routeStops[i].sid)) {
+        indexArray.push(i);
+        if (indexArray.length === 2) {
+          break;
+        }
       }
-      return false;
-    });
+    }
     indexArray.sort((a, b) => a - b);
     return route.stops.filter((stop, index) => index >= indexArray[0] && index <= indexArray[1]);
   }
@@ -97,7 +101,7 @@ class Map extends Component {
       stops = [];
     }
     if (stops.length === 0
-      || (stops.length === 1 && stops[0] !== stopCoordinates)) {
+      || (stops.length === 1 && !this.checkIfTwoStopsAreEqual(stops[0], stopCoordinates))) {
       console.log(`Stop Sid: ${stopInfo.sid}`);
       stops.push(stopInfo);
     }
@@ -106,6 +110,13 @@ class Map extends Component {
       const routeSegment = this.getRouteBetweenStops(route);
       console.log(routeSegment);
     }
+  }
+  /**
+   * sees if two stops are equal by evaluating their coordinates
+   */
+  checkIfTwoStopsAreEqual(stop1, stop2) {
+    console.log(this);
+    return stop1[0] === stop2[0] && stop1[1] === stop2[1];
   }
   /**
    * Calculate & Update state of new dimensions
