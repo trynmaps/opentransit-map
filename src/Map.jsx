@@ -76,7 +76,7 @@ class Map extends Component {
       { force: true },
     );
   }
-   /**
+  /**
    * return coordinates in an array [lon, lat]
    */
   getCoordinateArray(stop) {
