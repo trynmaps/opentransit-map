@@ -76,6 +76,9 @@ class Map extends Component {
       { force: true },
     );
   }
+   /**
+   * return coordinates in an array [lon, lat]
+   */
   getCoordinateArray(stop) {
     console.log(this);
     const stopPoints = [];
@@ -83,7 +86,10 @@ class Map extends Component {
     stopPoints.push(stop.lon);
     return stopPoints;
   }
-
+  /**
+   * given the two selected stop sids, returns a line segment
+   * between them
+   */
   getRouteBetweenStops(routeStops) {
     const stopSids = this.state.selectedStops.map(stop => stop.sid);
     stopSids.sort((a, b) => a - b);
@@ -97,6 +103,10 @@ class Map extends Component {
     const line = turf.lineString(route);
     return turf.lineSlice(startingPoint, endingPoint, line);
   }
+  /**
+   * sets stop sids based on selected stops.
+   * Stores up to two stops sids. Used to draw subroutes
+   */
   getStopInfo(route, stopCoordinates) {
     let stops = this.state.selectedStops;
     const station
