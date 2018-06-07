@@ -54,6 +54,20 @@ export function getRoutesLayer(geojson) {
   }));
 }
 
+export function getSubRoutesLayer(geojson) {
+  return (new GeoJsonLayer({
+    id: 'muni-routes-geojson',
+    data: {
+      ...geojson,
+    },
+    lineWidthScale: 8,
+    filled: true,
+    stroked: true,
+    extruded: true,
+    color: [255, 0, 0],
+  }));
+}
+
 export function getVehicleMarkersLayer(route, displayVehicleInfo) {
   /* returns new DeckGL Icon Layer displaying all vehicles on given routes */
   const westData = route.routeStates[0].vehicles.reduce((westBus, vehicle) => {
