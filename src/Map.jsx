@@ -17,6 +17,40 @@ import {
 import muniRoutesGeoJson from './res/muniRoutes.geo.json';
 import Checkbox from './Checkbox';
 
+const notAlpha = /[^a-zA-Z]/g;
+const notNumeric = /[^0-9]/g;
+
+function sortAlphaNumeric(a, b) {
+  const routeA = a.properties.name;
+  const routeB = b.properties.name;
+  const AInt = parseInt(routeA, 10);
+  const BInt = parseInt(routeB, 10);
+
+  // special case for K/T and K-OWL
+  if (routeA === 'K/T' && routeB === 'K-OWL') return -1;
+  if (routeA === 'K-OWL' && routeB === 'K/T') return 1;
+
+  if (Number.isNaN(AInt) && Number.isNaN(BInt)) {
+    const aAlpha = routeA.replace(notAlpha, '');
+    const bAlpha = routeB.replace(notAlpha, '');
+    if (aAlpha === bAlpha) {
+      const aNumeric = parseInt(routeA.replace(notNumeric, ''), 10);
+      const bNumeric = parseInt(routeB.replace(notNumeric, ''), 10);
+      if (aNumeric < bNumeric) return -1;
+      else if (aNumeric === bNumeric) return 0;
+      return 1;
+    }
+    return aAlpha > bAlpha ? 1 : -1;
+  } else if (Number.isNaN(AInt)) {
+    return -1;
+  } else if (Number.isNaN(BInt)) {
+    return 1;
+  }
+  return AInt > BInt ? 1 : -1;
+}
+
+const sortedRoutes = muniRoutesGeoJson.features.slice(0).sort(sortAlphaNumeric);
+
 class Map extends Component {
   constructor() {
     super();
@@ -154,7 +188,7 @@ class Map extends Component {
           <h3>Routes</h3>
         </div>
         <ul className="route-checkboxes">
-          {muniRoutesGeoJson.features.map(route => (
+          {sortedRoutes.map(route => (
             <Checkbox
               route={route}
               label={route.properties.name}
