@@ -8,6 +8,7 @@ import {
 import propTypes from 'prop-types';
 import { DateTimePicker } from 'react-widgets';
 import Toggle from 'react-toggle';
+import * as turf from '@turf/turf';
 import { MAP_STYLE, MAPBOX_ACCESS_TOKEN } from './config.json';
 import {
   getStopMarkersLayer,
@@ -75,20 +76,26 @@ class Map extends Component {
       { force: true },
     );
   }
-  getRouteBetweenStops(route) {
+  getCoordinateArray(stop) {
+    console.log(this);
+    const stopPoints = [];
+    stopPoints.push(stop.lat);
+    stopPoints.push(stop.lon);
+    return stopPoints;
+  }
+
+  getRouteBetweenStops(routeStops) {
     const stopSids = this.state.selectedStops.map(stop => stop.sid);
-    const routeStops = route.stops;
-    const indexArray = [];
-    for (let i = 0; i < routeStops.length; i += 1) {
-      if (stopSids.includes(routeStops[i].sid)) {
-        indexArray.push(i);
-        if (indexArray.length === 2) {
-          break;
-        }
-      }
-    }
-    indexArray.sort((a, b) => a - b);
-    return route.stops.filter((stop, index) => index >= indexArray[0] && index <= indexArray[1]);
+    stopSids.sort((a, b) => a - b);
+    const route = routeStops.map(stop => this.getCoordinateArray(stop));
+    let startingPoint = routeStops.find(stop => stop.sid === stopSids[0]);
+    startingPoint = this.getCoordinateArray(startingPoint);
+    startingPoint = turf.point(startingPoint);
+    let endingPoint = routeStops.find(stop => stop.sid === stopSids[1]);
+    endingPoint = this.getCoordinateArray(endingPoint);
+    endingPoint = turf.point(endingPoint);
+    const line = turf.lineString(route);
+    return turf.lineSlice(startingPoint, endingPoint, line);
   }
   getStopInfo(route, stopCoordinates) {
     let stops = this.state.selectedStops;
@@ -107,7 +114,7 @@ class Map extends Component {
     }
     this.setState({ selectedStops: stops });
     if (stops.length === 2) {
-      const routeSegment = this.getRouteBetweenStops(route);
+      const routeSegment = this.getRouteBetweenStops(route.stops);
       console.log(routeSegment);
     }
   }
