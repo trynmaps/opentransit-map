@@ -18,37 +18,38 @@ import muniRoutesGeoJson from './res/muniRoutes.geo.json';
 import Checkbox from './Checkbox';
 
 const notAlpha = /[^a-zA-Z]/g;
-const notNumeric = /[^0-9]/g;
 
+/*
+Sort by putting letters before numbers and treat number strings as integers.
+Calling Array.prototype.sort() without a compare function sorts elements as
+strings by Unicode code point order, e.g. [2, 12, 13, 9, 1, 27].sort() returns
+[1, 12, 13, 2, 27, 9]
+*/
 function sortAlphaNumeric(a, b) {
-  const routeA = a.properties.name;
-  const routeB = b.properties.name;
-  const AInt = parseInt(routeA, 10);
-  const BInt = parseInt(routeB, 10);
+  const aRoute = a.properties.name;
+  const bRoute = b.properties.name;
+  const aInteger = parseInt(aRoute, 10);
+  const bInteger = parseInt(bRoute, 10);
+  const aAlpha = aRoute.replace(notAlpha, '');
+  const bAlpha = bRoute.replace(notAlpha, '');
 
   // special case for K/T and K-OWL
-  if (routeA === 'K/T' && routeB === 'K-OWL') return -1;
-  if (routeA === 'K-OWL' && routeB === 'K/T') return 1;
+  if (aRoute === 'K/T' && bRoute === 'K-OWL') return -1;
+  if (aRoute === 'K-OWL' && bRoute === 'K/T') return 1;
 
-  if (Number.isNaN(AInt) && Number.isNaN(BInt)) {
-    const aAlpha = routeA.replace(notAlpha, '');
-    const bAlpha = routeB.replace(notAlpha, '');
-    if (aAlpha === bAlpha) {
-      const aNumeric = parseInt(routeA.replace(notNumeric, ''), 10);
-      const bNumeric = parseInt(routeB.replace(notNumeric, ''), 10);
-      if (aNumeric < bNumeric) return -1;
-      else if (aNumeric === bNumeric) return 0;
-      return 1;
-    }
-    return aAlpha > bAlpha ? 1 : -1;
-  } else if (Number.isNaN(AInt)) {
+  if (Number.isNaN(aInteger) && Number.isNaN(bInteger)) {
+    return aAlpha < bAlpha ? -1 : 1;
+  } else if (Number.isNaN(aInteger)) {
     return -1;
-  } else if (Number.isNaN(BInt)) {
+  } else if (Number.isNaN(bInteger)) {
     return 1;
+  } else if (aInteger === bInteger) {
+    return aAlpha < bAlpha ? -1 : 1;
   }
-  return AInt > BInt ? 1 : -1;
+  return aInteger - bInteger;
 }
 
+// make a copy of routes and sort
 const sortedRoutes = muniRoutesGeoJson.features.slice(0).sort(sortAlphaNumeric);
 
 class Map extends Component {
