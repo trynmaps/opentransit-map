@@ -66,13 +66,6 @@ class Map extends Component {
         pitch: 0,
         bearing: 0,
       },
-      settings: {
-        dragPan: true,
-        minZoom: 0,
-        maxZoom: 20,
-        minPitch: 0,
-        maxPitch: 85,
-      },
       popup: {
         coordinates: { lon: 0, lat: 0 },
         info: { vid: '', heading: 0 },
@@ -104,7 +97,7 @@ class Map extends Component {
       null,
       (err) => {
         if (err) {
-          console.log(err);
+          console.warn(err);
         }
       },
       { force: true },
@@ -123,7 +116,6 @@ class Map extends Component {
     }
     if (stops.length === 0
       || (stops.length === 1 && stops[0] !== stopCoordinates)) {
-      console.log(`Stop Sid: ${stopInfo.sid}`);
       stops.push(stopInfo);
     }
     this.setState({ selectedStops: stops });
@@ -206,11 +198,10 @@ class Map extends Component {
     const onViewportChange = viewport => this.setState({ viewport });
     const { trynState } = this.props.trynState;
     const { routes } = trynState || {};
-    const { viewport, settings, geojson } = this.state;
+    const { viewport, geojson } = this.state;
 
     // I don't know what settings used for,
     // just keeping it in following format to bypass linter errors
-    console.log(settings && settings);
 
     const selectedRouteNames = new Set();
     this.selectedRoutes
