@@ -6,3 +6,4 @@ DS_STORE
 .DS_Store
 src/__generated__
 src/config.js
+.vscode/
