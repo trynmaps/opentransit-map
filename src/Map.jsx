@@ -194,7 +194,7 @@ class Map extends Component {
               route={route}
               label={route.properties.name}
               handleCheckboxChange={checkedRoute => this.filterRoutes(checkedRoute)}
-              key={route.properties.name}
+              key={route.id}
             />
           ))}
         </ul>
