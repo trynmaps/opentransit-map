@@ -51,20 +51,22 @@ export function getRoutesLayer(geojson) {
     filled: true,
     stroked: true,
     extruded: true,
+    getLineColor: f => f.properties.lineColor || [255, 255, 255, 0],
+
   }));
 }
 
 export function getSubRoutesLayer(geojson) {
   return (new GeoJsonLayer({
-    id: 'muni-routes-geojson',
+    id: 'mymuni-routes-geojson',
     data: {
       ...geojson,
     },
-    lineWidthScale: 8,
+    lineWidthScale: 24,
     filled: true,
     stroked: true,
     extruded: true,
-    color: [255, 0, 0],
+    getLineColor: f => f.properties.lineColor || [255, 0, 0, 255],
   }));
 }
 

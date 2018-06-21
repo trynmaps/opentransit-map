@@ -14,7 +14,6 @@ import {
   getStopMarkersLayer,
   getRoutesLayer,
   getVehicleMarkersLayer,
-  getSubRoutesLayer,
 } from './Route';
 import muniRoutesGeoJson from './res/muniRoutes.geo.json';
 import Checkbox from './Checkbox';
@@ -103,7 +102,9 @@ class Map extends Component {
     endingPoint = this.getCoordinateArray(endingPoint);
     endingPoint = turf.point(endingPoint);
     const line = turf.lineString(route);
-    this.setState({ subroute: turf.lineSlice(startingPoint, endingPoint, line) });
+    const subroute = turf.lineSlice(startingPoint, endingPoint, line);
+    subroute.properties.color = 'red';
+    this.setState({ subroute });
   }
   /**
    * sets stop sids based on selected stops.
@@ -237,7 +238,7 @@ class Map extends Component {
         ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
       ], []);
     if (Object.getOwnPropertyNames(this.state.subroute).length !== 0) {
-      routeLayers.push(getSubRoutesLayer(this.state.subroute));
+      routeLayers.push(this.state.subroute);
     }
     return (
       <ReactMapGL
