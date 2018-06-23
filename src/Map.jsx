@@ -105,14 +105,11 @@ class Map extends Component {
     );
   }
   /**
-   * return coordinates in an array [lon, lat]
+   * return coordinates in an array [lat, lon]
    */
   getCoordinateArray(stop) {
     console.log(this);
-    const stopPoints = [];
-    stopPoints.push(stop.lat);
-    stopPoints.push(stop.lon);
-    return stopPoints;
+    return [stop.lat, stop.lon];
   }
   /**
    * given the two selected stop sids, returns a line segment
