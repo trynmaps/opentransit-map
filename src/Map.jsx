@@ -66,6 +66,13 @@ class Map extends Component {
         pitch: 0,
         bearing: 0,
       },
+      settings: {
+        dragPan: true,
+        minZoom: 0,
+        maxZoom: 20,
+        minPitch: 0,
+        maxPitch: 85,
+      },
       popup: {
         coordinates: { lon: 0, lat: 0 },
         info: { vid: '', heading: 0 },
@@ -97,25 +104,28 @@ class Map extends Component {
       null,
       (err) => {
         if (err) {
-          console.warn(err);
+          console.log(err);
         }
       },
       { force: true },
     );
   }
+  //logs long,lat coordinates when clicking map
+  getCoordinates(mapData) {
+    console.log(mapData.lngLat);
+  }
 
   getStopInfo(route, stopCoordinates) {
     let stops = this.state.selectedStops;
-    const station
-    = route.stops.find(currentStop => currentStop.lon === stopCoordinates[0]
-    && currentStop.lat === stopCoordinates[1]);
+    const station = route.stops.find(currentStop =>
+      currentStop.lon === stopCoordinates[0] && currentStop.lat === stopCoordinates[1]);
     const stopInfo = Object.assign({}, stopCoordinates);
     stopInfo.sid = station.sid;
     if (stops.length > 1) {
       stops = [];
     }
-    if (stops.length === 0
-      || (stops.length === 1 && stops[0] !== stopCoordinates)) {
+    if (stops.length === 0 || (stops.length === 1 && stops[0] !== stopCoordinates)) {
+      console.log(`Stop Sid: ${stopInfo.sid}`);
       stops.push(stopInfo);
     }
     this.setState({ selectedStops: stops });
@@ -186,7 +196,7 @@ class Map extends Component {
               route={route}
               label={route.properties.name}
               handleCheckboxChange={checkedRoute => this.filterRoutes(checkedRoute)}
-              key={route.id}
+              key={route.properties.name}
             />
           ))}
         </ul>
@@ -198,27 +208,31 @@ class Map extends Component {
     const onViewportChange = viewport => this.setState({ viewport });
     const { trynState } = this.props.trynState;
     const { routes } = trynState || {};
-    const { viewport, geojson } = this.state;
+    const { viewport, settings, geojson } = this.state;
 
     // I don't know what settings used for,
     // just keeping it in following format to bypass linter errors
+    console.log(settings && settings);
 
     const selectedRouteNames = new Set();
-    this.selectedRoutes
-      .forEach(route => selectedRouteNames.add(route.properties.name));
+    this.selectedRoutes.forEach(route => selectedRouteNames.add(route.properties.name));
     const routeLayers = (routes || [])
       .filter(route => selectedRouteNames.has(route.rid))
-      .reduce((layers, route) => [
-        ...layers,
-        this.state.showStops
-          ? getStopMarkersLayer(
-            route,
-            marker => this.getStopInfo(route, marker.object.position), this.state.selectedStops,
-          )
-          : null,
-        getRoutesLayer(geojson),
-        ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
-      ], []);
+      .reduce(
+        (layers, route) => [
+          ...layers,
+          this.state.showStops
+            ? getStopMarkersLayer(
+              route,
+              marker => this.getStopInfo(route, marker.object.position),
+              this.state.selectedStops,
+            )
+            : null,
+          getRoutesLayer(geojson),
+          ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
+        ],
+        [],
+      );
 
     return (
       <ReactMapGL
@@ -226,6 +240,7 @@ class Map extends Component {
         mapStyle={MAP_STYLE}
         mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
         onViewportChange={onViewportChange}
+        onClick={this.getCoordinates.bind(this)}
       >
         <div className="navigation-control">
           <NavigationControl onViewportChange={onViewportChange} />
@@ -242,12 +257,10 @@ class Map extends Component {
               <p>ID: {this.state.popup.info.vid}</p>
               <p>Heading: {this.state.popup.info.heading}</p>
             </div>
-          </Popup>) : null}
+          </Popup>
+        ) : null}
 
-        <DeckGL
-          {...viewport}
-          layers={routeLayers}
-        />
+        <DeckGL {...viewport} layers={routeLayers} />
       </ReactMapGL>
     );
   }
@@ -256,9 +269,7 @@ class Map extends Component {
     return (
       <div className="container-fluid">
         <div className="row">
-          <div className="map col-sm-9 offset-sm-3 col-md-10 offset-md-2">
-            {this.renderMap()}
-          </div>
+          <div className="map col-sm-9 offset-sm-3 col-md-10 offset-md-2">{this.renderMap()}</div>
           <div className="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
             {this.renderControlPanel()}
           </div>
@@ -269,10 +280,7 @@ class Map extends Component {
 }
 
 Map.propTypes = {
-  trynState: propTypes.shape(
-    propTypes.string,
-    propTypes.arrayOf(propTypes.object),
-  ).isRequired,
+  trynState: propTypes.shape(propTypes.string, propTypes.arrayOf(propTypes.object)).isRequired,
   relay: propTypes.element.isRequired,
 };
 
@@ -280,7 +288,7 @@ export default createRefetchContainer(
   Map,
   graphql`
     fragment Map_trynState on Query {
-      trynState(agency: $agency, startTime: $startTime, endTime: $endTime){
+      trynState(agency: $agency, startTime: $startTime, endTime: $endTime) {
         startTime
         endTime
         agency
