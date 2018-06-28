@@ -8,6 +8,7 @@ import {
 import propTypes from 'prop-types';
 import { DateTimePicker } from 'react-widgets';
 import Toggle from 'react-toggle';
+import * as turf from '@turf/turf';
 import { MAP_STYLE, MAPBOX_ACCESS_TOKEN } from './config.json';
 import {
   getStopMarkersLayer,
@@ -103,7 +104,34 @@ class Map extends Component {
       { force: true },
     );
   }
-
+  /**
+   * return coordinates in an array [lat, lon]
+   */
+  getCoordinateArray(stop) {
+    console.log(this);
+    return [stop.lat, stop.lon];
+  }
+  /**
+   * given the two selected stop sids, returns a line segment
+   * between them
+   */
+  getRouteBetweenStops(routeStops) {
+    const stopSids = this.state.selectedStops.map(stop => stop.sid);
+    stopSids.sort((a, b) => a - b);
+    const route = routeStops.map(stop => this.getCoordinateArray(stop));
+    let startingPoint = routeStops.find(stop => stop.sid === stopSids[0]);
+    startingPoint = this.getCoordinateArray(startingPoint);
+    startingPoint = turf.point(startingPoint);
+    let endingPoint = routeStops.find(stop => stop.sid === stopSids[1]);
+    endingPoint = this.getCoordinateArray(endingPoint);
+    endingPoint = turf.point(endingPoint);
+    const line = turf.lineString(route);
+    return turf.lineSlice(startingPoint, endingPoint, line);
+  }
+  /**
+   * sets stop sids based on selected stops.
+   * Stores up to two stops sids. Used to draw subroutes
+   */
   getStopInfo(route, stopCoordinates) {
     let stops = this.state.selectedStops;
     const station
@@ -115,10 +143,22 @@ class Map extends Component {
       stops = [];
     }
     if (stops.length === 0
-      || (stops.length === 1 && stops[0] !== stopCoordinates)) {
+      || (stops.length === 1 && !this.checkIfTwoStopsAreEqual(stops[0], stopCoordinates))) {
+      console.log(`Stop Sid: ${stopInfo.sid}`);
       stops.push(stopInfo);
     }
     this.setState({ selectedStops: stops });
+    if (stops.length === 2) {
+      const routeSegment = this.getRouteBetweenStops(route.stops);
+      console.log(routeSegment);
+    }
+  }
+  /**
+   * sees if two stops are equal by evaluating their coordinates
+   */
+  checkIfTwoStopsAreEqual(stop1, stop2) {
+    console.log(this);
+    return stop1[0] === stop2[0] && stop1[1] === stop2[1];
   }
   /**
    * Calculate & Update state of new dimensions

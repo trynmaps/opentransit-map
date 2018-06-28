@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@turf/turf": "^5.1.6",
     "@types/moment": "^2.13.0",
     "autoprefixer": "7.1.2",
     "axios": "^0.17.0",
