@@ -1,4 +1,4 @@
-import { GeoJsonLayer, IconLayer } from 'deck.gl';
+import { GeoJsonLayer, IconLayer, PathLayer } from 'deck.gl';
 
 // Icon Layer atlas icon
 const atlasIcon = require('./res/icon-atlas.png');
@@ -62,17 +62,18 @@ export function getRoutesLayer(geojson) {
   }));
 }
 
-export function getSubRoutesLayer(geojson) {
-  return (new GeoJsonLayer({
-    id: 'mymuni-routes-geojson',
+export function getSubRoutesLayer(subroute) {
+  return (new PathLayer({
+    id: 'path-layer',
     data: {
-      ...geojson,
+      ...subroute,
     },
-    lineWidthScale: 24,
-    filled: true,
-    stroked: true,
-    extruded: true,
-    getLineColor: f => f.properties.lineColor || [255, 0, 0, 255],
+    pickable: true,
+    widthScale: 20,
+    widthMinPixels: 2,
+    getPath: d => d.path,
+    getColor: d => d.color,
+    getWidth: 5,
   }));
 }
 

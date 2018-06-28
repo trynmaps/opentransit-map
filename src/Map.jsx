@@ -14,6 +14,7 @@ import {
   getStopMarkersLayer,
   getRoutesLayer,
   getVehicleMarkersLayer,
+  getSubRoutesLayer,
 } from './Route';
 import muniRoutesGeoJson from './res/muniRoutes.geo.json';
 import Checkbox from './Checkbox';
@@ -127,8 +128,12 @@ class Map extends Component {
     endingPoint = this.getCoordinateArray(endingPoint);
     endingPoint = turf.point(endingPoint);
     const line = turf.lineString(route);
-    const subroute = turf.lineSlice(startingPoint, endingPoint, line);
-    subroute.properties.color = 'red';
+    const lineSlice = turf.lineSlice(startingPoint, endingPoint, line);
+    const subroute = {
+      path: lineSlice.geometry.coordinates,
+      name: 'Bus Route',
+      color: [255, 0, 0],
+    };
     this.setState({ subroute });
   }
   /**
@@ -240,7 +245,7 @@ class Map extends Component {
     const onViewportChange = viewport => this.setState({ viewport });
     const { trynState } = this.props.trynState;
     const { routes } = trynState || {};
-    const { viewport, geojson } = this.state;
+    const { viewport, geojson, subroute } = this.state;
 
     // I don't know what settings used for,
     // just keeping it in following format to bypass linter errors
@@ -259,11 +264,11 @@ class Map extends Component {
           )
           : null,
         getRoutesLayer(geojson),
+        !Object.keys(subroute).length === 0 && !subroute.constructor === Object
+          ? getSubRoutesLayer(subroute)
+          : null,
         ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
       ], []);
-    if (Object.getOwnPropertyNames(this.state.subroute).length !== 0) {
-      routeLayers.push(this.state.subroute);
-    }
     return (
       <ReactMapGL
         {...viewport}
