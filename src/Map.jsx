@@ -18,6 +18,41 @@ import {
 import muniRoutesGeoJson from './res/muniRoutes.geo.json';
 import Checkbox from './Checkbox';
 
+const notAlpha = /[^a-zA-Z]/g;
+
+/*
+Sort by putting letters before numbers and treat number strings as integers.
+Calling Array.prototype.sort() without a compare function sorts elements as
+strings by Unicode code point order, e.g. [2, 12, 13, 9, 1, 27].sort() returns
+[1, 12, 13, 2, 27, 9]
+*/
+function sortAlphaNumeric(a, b) {
+  const aRoute = a.properties.name;
+  const bRoute = b.properties.name;
+  const aInteger = parseInt(aRoute, 10);
+  const bInteger = parseInt(bRoute, 10);
+  const aAlpha = aRoute.replace(notAlpha, '');
+  const bAlpha = bRoute.replace(notAlpha, '');
+
+  // special case for K/T and K-OWL
+  if (aRoute === 'K/T' && bRoute === 'K-OWL') return -1;
+  if (aRoute === 'K-OWL' && bRoute === 'K/T') return 1;
+
+  if (Number.isNaN(aInteger) && Number.isNaN(bInteger)) {
+    return aAlpha < bAlpha ? -1 : 1;
+  } else if (Number.isNaN(aInteger)) {
+    return -1;
+  } else if (Number.isNaN(bInteger)) {
+    return 1;
+  } else if (aInteger === bInteger) {
+    return aAlpha < bAlpha ? -1 : 1;
+  }
+  return aInteger - bInteger;
+}
+
+// make a copy of routes and sort
+const sortedRoutes = muniRoutesGeoJson.features.slice(0).sort(sortAlphaNumeric);
+
 class Map extends Component {
   constructor() {
     super();
@@ -31,13 +66,6 @@ class Map extends Component {
         zoom: 13,
         pitch: 0,
         bearing: 0,
-      },
-      settings: {
-        dragPan: true,
-        minZoom: 0,
-        maxZoom: 20,
-        minPitch: 0,
-        maxPitch: 85,
       },
       popup: {
         coordinates: { lon: 0, lat: 0 },
@@ -71,21 +99,18 @@ class Map extends Component {
       null,
       (err) => {
         if (err) {
-          console.log(err);
+          console.warn(err);
         }
       },
       { force: true },
     );
   }
   /**
-   * return coordinates in an array [lon, lat]
+   * return coordinates in an array [lat, lon]
    */
   getCoordinateArray(stop) {
     console.log(this);
-    const stopPoints = [];
-    stopPoints.push(stop.lat);
-    stopPoints.push(stop.lon);
-    return stopPoints;
+    return [stop.lat, stop.lon];
   }
   /**
    * given the two selected stop sids, returns a line segment
@@ -198,12 +223,12 @@ class Map extends Component {
           <h3>Routes</h3>
         </div>
         <ul className="route-checkboxes">
-          {muniRoutesGeoJson.features.map(route => (
+          {sortedRoutes.map(route => (
             <Checkbox
               route={route}
               label={route.properties.name}
               handleCheckboxChange={checkedRoute => this.filterRoutes(checkedRoute)}
-              key={route.properties.name}
+              key={route.id}
             />
           ))}
         </ul>
@@ -215,11 +240,10 @@ class Map extends Component {
     const onViewportChange = viewport => this.setState({ viewport });
     const { trynState } = this.props.trynState;
     const { routes } = trynState || {};
-    const { viewport, settings, geojson } = this.state;
+    const { viewport, geojson } = this.state;
 
     // I don't know what settings used for,
     // just keeping it in following format to bypass linter errors
-    console.log(settings && settings);
 
     const selectedRouteNames = new Set();
     this.selectedRoutes

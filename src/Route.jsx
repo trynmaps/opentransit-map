@@ -5,9 +5,15 @@ const atlasIcon = require('./res/icon-atlas.png');
 const busIconWest = require('./res/icon-bus-west.png');
 const busIconEast = require('./res/icon-bus-east.png');
 
-const ICON_MAPPING = {
+const STOP_ICON_MAPPING = {
   marker: {
     x: 0, y: 0, width: 128, height: 128, mask: true,
+  },
+};
+
+const BUS_ICON_MAPPING = {
+  marker: {
+    x: 0, y: 0, width: 128, height: 128, mask: false,
   },
 };
 
@@ -35,7 +41,7 @@ export function getStopMarkersLayer(route, getStopInfo, selectedStops) {
     id: 'stop-icon-layer',
     data,
     iconAtlas: atlasIcon,
-    iconMapping: ICON_MAPPING,
+    iconMapping: STOP_ICON_MAPPING,
     pickable: true,
     onClick: info => getStopInfo(info),
   }));
@@ -109,7 +115,7 @@ export function getVehicleMarkersLayer(route, displayVehicleInfo) {
       id: 'west-vehicle-icon-layer',
       data: westData,
       iconAtlas: busIconWest,
-      iconMapping: ICON_MAPPING,
+      iconMapping: BUS_ICON_MAPPING,
       pickable: true,
       // calls pop-up function
       onClick: info => displayVehicleInfo(info),
@@ -118,7 +124,7 @@ export function getVehicleMarkersLayer(route, displayVehicleInfo) {
       id: 'east-vehicle-icon-layer',
       data: eastData,
       iconAtlas: busIconEast,
-      iconMapping: ICON_MAPPING,
+      iconMapping: BUS_ICON_MAPPING,
       pickable: true,
       // calls pop-up function
       onClick: info => displayVehicleInfo(info),
