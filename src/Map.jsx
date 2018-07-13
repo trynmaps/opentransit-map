@@ -264,7 +264,7 @@ class Map extends Component {
           )
           : null,
         getRoutesLayer(geojson),
-        !Object.keys(subroute).length === 0 && !subroute.constructor === Object
+        !(Object.keys(subroute).length === 0) && subroute.constructor === Object
           ? getSubRoutesLayer(subroute)
           : null,
         ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),

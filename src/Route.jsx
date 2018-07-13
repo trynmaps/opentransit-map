@@ -57,13 +57,11 @@ export function getRoutesLayer(geojson) {
     filled: true,
     stroked: true,
     extruded: true,
-    getLineColor: f => f.properties.lineColor || [255, 255, 255, 0],
-
   }));
 }
 
 export function getSubRoutesLayer(subroute) {
-  return (new PathLayer({
+  const subrouteLayer = new PathLayer({
     id: 'path-layer',
     data: {
       ...subroute,
@@ -74,7 +72,8 @@ export function getSubRoutesLayer(subroute) {
     getPath: d => d.path,
     getColor: d => d.color,
     getWidth: 5,
-  }));
+  });
+  return subrouteLayer;
 }
 
 export function getVehicleMarkersLayer(route, displayVehicleInfo) {
