@@ -53,7 +53,7 @@ export function getRoutesLayer(geojson) {
     data: {
       ...geojson,
     },
-    lineWidthScale: 8,
+    lineWidthScale: 2,
     filled: true,
     stroked: true,
     extruded: true,
@@ -61,11 +61,10 @@ export function getRoutesLayer(geojson) {
 }
 
 export function getSubRoutesLayer(subroute) {
+  const data = [subroute];
   const subrouteLayer = new PathLayer({
-    id: 'path-layer',
-    data: {
-      ...subroute,
-    },
+    id: 'subroute-path-layer',
+    data,
     pickable: true,
     widthScale: 20,
     widthMinPixels: 2,

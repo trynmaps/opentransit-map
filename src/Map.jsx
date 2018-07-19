@@ -111,7 +111,7 @@ class Map extends Component {
    */
   getCoordinateArray(stop) {
     console.log(this);
-    return [stop.lat, stop.lon];
+    return [stop.lon, stop.lat];
   }
   /**
    * given the two selected stop sids, returns a line segment
@@ -269,6 +269,7 @@ class Map extends Component {
           : null,
         ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
       ], []);
+    console.log(routeLayers);
     return (
       <ReactMapGL
         {...viewport}
