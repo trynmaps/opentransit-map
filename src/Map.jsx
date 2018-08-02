@@ -72,7 +72,7 @@ class Map extends Component {
         coordinates: { lon: 0, lat: 0 },
         info: { vid: '', heading: 0 },
       },
-      selectedStops: [],
+      // selectedStops: [],
       subroute: {},
       currentStateTime: new Date(Date.now()),
       showStops: true,
@@ -81,6 +81,7 @@ class Map extends Component {
 
   componentWillMount() {
     this.selectedRoutes = new Set();
+    this.selectedStops = [];
     this.updateDimensions();
     window.addEventListener('resize', this.updateDimensions.bind(this));
   }
@@ -118,7 +119,7 @@ class Map extends Component {
    * between them
    */
   getRouteBetweenStops(routeStops) {
-    const stopSids = this.state.selectedStops.map(stop => stop.sid);
+    const stopSids = this.selectedStops.map(stop => stop.sid);
     stopSids.sort((a, b) => a - b);
     const route = routeStops.map(stop => this.getCoordinateArray(stop));
     let startingPoint = routeStops.find(stop => stop.sid === stopSids[0]);
@@ -130,15 +131,6 @@ class Map extends Component {
     // const line = turf.lineString(route, { color: [255, 0, 0] });
     const line = turf.lineString(route);
     const lineSlice = turf.lineSlice(startingPoint, endingPoint, line);
-    /*
-    const subroute = {
-      path: lineSlice.geometry.coordinates,
-      name: 'Bus Route',
-      color: 'red',
-    };
-
-    subroute.path.pop();
-    */
     this.setState({ subroute: lineSlice });
   }
   /**
@@ -146,7 +138,7 @@ class Map extends Component {
    * Stores up to two stops sids. Used to draw subroutes
    */
   getStopInfo(route, stopCoordinates) {
-    let stops = this.state.selectedStops;
+    let stops = this.selectedStops;
     const station
     = route.stops.find(currentStop => currentStop.lon === stopCoordinates[0]
     && currentStop.lat === stopCoordinates[1]);
@@ -160,7 +152,8 @@ class Map extends Component {
       console.log(`Stop Sid: ${stopInfo.sid}`);
       stops.push(stopInfo);
     }
-    this.setState({ selectedStops: stops });
+    // this.setState({ selectedStops: stops });
+    this.selectedStops = stops;
     if (stops.length === 2) {
       this.getRouteBetweenStops(route.stops);
     }
@@ -253,7 +246,7 @@ class Map extends Component {
     const { trynState } = this.props.trynState;
     const { routes } = trynState || {};
     const { viewport, subroute } = this.state;
-
+    const selectedStops = [...this.selectedStops];
     // I don't know what settings used for,
     // just keeping it in following format to bypass linter errors
 
@@ -267,11 +260,12 @@ class Map extends Component {
         this.state.showStops
           ? getStopMarkersLayer(
             route,
-            marker => this.getStopInfo(route, marker.object.position), this.state.selectedStops,
+            marker => this.getStopInfo(route, marker.object.position), selectedStops,
           )
           : null,
         // getRoutesLayer(geojson),
-        !(Object.keys(subroute).length === 0) && subroute.constructor === Object
+        !(Object.keys(subroute).length === 0)
+        && subroute.constructor === Object && selectedStops.length === 2
           ? getSubRoutesLayer(subroute)
           : null,
         ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
