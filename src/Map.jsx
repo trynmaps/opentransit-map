@@ -12,7 +12,7 @@ import * as turf from '@turf/turf';
 import { MAP_STYLE, MAPBOX_ACCESS_TOKEN } from './config.json';
 import {
   getStopMarkersLayer,
-  getRoutesLayer,
+  // getRoutesLayer,
   getVehicleMarkersLayer,
   getSubRoutesLayer,
 } from './Route';
@@ -127,14 +127,19 @@ class Map extends Component {
     let endingPoint = routeStops.find(stop => stop.sid === stopSids[1]);
     endingPoint = this.getCoordinateArray(endingPoint);
     endingPoint = turf.point(endingPoint);
+    // const line = turf.lineString(route, { color: [255, 0, 0] });
     const line = turf.lineString(route);
     const lineSlice = turf.lineSlice(startingPoint, endingPoint, line);
+    /*
     const subroute = {
       path: lineSlice.geometry.coordinates,
       name: 'Bus Route',
-      color: [255, 0, 0],
+      color: 'red',
     };
-    this.setState({ subroute });
+
+    subroute.path.pop();
+    */
+    this.setState({ subroute: lineSlice });
   }
   /**
    * sets stop sids based on selected stops.
@@ -200,11 +205,13 @@ class Map extends Component {
     } else {
       this.selectedRoutes.add(route);
     }
+    /*
     const newGeojson = {
       features: Array.from(this.selectedRoutes),
       type: 'FeatureCollection',
     };
     this.setState({ geojson: newGeojson });
+    */
   }
 
   renderControlPanel() {
@@ -245,7 +252,7 @@ class Map extends Component {
     const onViewportChange = viewport => this.setState({ viewport });
     const { trynState } = this.props.trynState;
     const { routes } = trynState || {};
-    const { viewport, geojson, subroute } = this.state;
+    const { viewport, subroute } = this.state;
 
     // I don't know what settings used for,
     // just keeping it in following format to bypass linter errors
@@ -263,7 +270,7 @@ class Map extends Component {
             marker => this.getStopInfo(route, marker.object.position), this.state.selectedStops,
           )
           : null,
-        getRoutesLayer(geojson),
+        // getRoutesLayer(geojson),
         !(Object.keys(subroute).length === 0) && subroute.constructor === Object
           ? getSubRoutesLayer(subroute)
           : null,

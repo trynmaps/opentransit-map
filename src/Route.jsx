@@ -1,4 +1,4 @@
-import { GeoJsonLayer, IconLayer, PathLayer } from 'deck.gl';
+import { GeoJsonLayer, IconLayer } from 'deck.gl';
 
 // Icon Layer atlas icon
 const atlasIcon = require('./res/icon-atlas.png');
@@ -53,7 +53,7 @@ export function getRoutesLayer(geojson) {
     data: {
       ...geojson,
     },
-    lineWidthScale: 2,
+    lineWidthScale: 8,
     filled: true,
     stroked: true,
     extruded: true,
@@ -61,16 +61,15 @@ export function getRoutesLayer(geojson) {
 }
 
 export function getSubRoutesLayer(subroute) {
-  const data = [subroute];
-  const subrouteLayer = new PathLayer({
+  const subrouteLayer = new GeoJsonLayer({
     id: 'subroute-path-layer',
-    data,
-    pickable: true,
-    widthScale: 20,
-    widthMinPixels: 2,
-    getPath: d => d.path,
-    getColor: d => d.color,
-    getWidth: 5,
+    data: {
+      ...subroute,
+    },
+    lineWidthScale: 2,
+    filled: true,
+    stroked: true,
+    extruded: true,
   });
   return subrouteLayer;
 }
