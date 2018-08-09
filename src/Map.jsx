@@ -98,7 +98,7 @@ class Map extends Component {
       null,
       (err) => {
         if (err) {
-          console.warn(err);
+          throw (err);
         }
       },
       { force: true },
@@ -108,7 +108,6 @@ class Map extends Component {
    * return coordinates in an array [lat, lon]
    */
   getCoordinateArray(stop) {
-    console.log(this);
     return [stop.lat, stop.lon];
   }
   /**
@@ -144,20 +143,14 @@ class Map extends Component {
     }
     if (stops.length === 0
       || (stops.length === 1 && !this.checkIfTwoStopsAreEqual(stops[0], stopCoordinates))) {
-      console.log(`Stop Sid: ${stopInfo.sid}`);
       stops.push(stopInfo);
     }
     this.setState({ selectedStops: stops });
-    if (stops.length === 2) {
-      const routeSegment = this.getRouteBetweenStops(route.stops);
-      console.log(routeSegment);
-    }
   }
   /**
    * sees if two stops are equal by evaluating their coordinates
    */
   checkIfTwoStopsAreEqual(stop1, stop2) {
-    console.log(this);
     return stop1[0] === stop2[0] && stop1[1] === stop2[1];
   }
   /**
