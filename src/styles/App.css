@@ -71,14 +71,6 @@ body {
   margin-bottom: -8px;
 }
 
-ul.route-checkboxes {
-  padding: 0;
-}
-
-ul.route-checkboxes li {
-  list-style: none;
-}
-
-ul.route-checkboxes li {
-  color: #fff;
+.route-input {
+  margin-right: 5px;
 }

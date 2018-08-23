@@ -20,11 +20,12 @@ class Checkbox extends Component {
   render() {
     const { isChecked } = this.state;
     const { label } = this.props;
-
+    const activeLabelClass = isChecked ? 'active' : '';
     return (
-      <li>
+      <li className={`list-group-item ${activeLabelClass}`}>
         <label htmlFor="input">
           <input
+            className="route-input"
             type="checkbox"
             value={label}
             checked={isChecked}

@@ -213,7 +213,7 @@ class Map extends Component {
         <div className="routes-header">
           <h3>Routes</h3>
         </div>
-        <ul className="route-checkboxes">
+        <ul className="list-group">
           {sortedRoutes.map(route => (
             <Checkbox
               route={route}
