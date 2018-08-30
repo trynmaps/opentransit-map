@@ -129,6 +129,7 @@ class Map extends Component {
     */
     if (typeof startingPoint === 'undefined' || typeof endingPoint === 'undefined') {
       this.setState({ subroute: null, selectedStops: [] });
+      return;
     }
     startingPoint = this.getCoordinateArray(startingPoint);
     startingPoint = turf.point(startingPoint);
