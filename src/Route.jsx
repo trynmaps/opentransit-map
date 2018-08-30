@@ -66,10 +66,11 @@ export function getSubRoutesLayer(subroute) {
     data: {
       ...subroute,
     },
-    lineWidthScale: 2,
+    lineWidthScale: 8,
     filled: true,
     stroked: true,
     extruded: true,
+    getLineColor: () => [0, 0, 255],
   });
   return subrouteLayer;
 }

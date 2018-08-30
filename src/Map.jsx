@@ -12,7 +12,7 @@ import * as turf from '@turf/turf';
 import { MAP_STYLE, MAPBOX_ACCESS_TOKEN } from './config.json';
 import {
   getStopMarkersLayer,
-  // getRoutesLayer,
+  getRoutesLayer,
   getVehicleMarkersLayer,
   getSubRoutesLayer,
 } from './Route';
@@ -72,16 +72,15 @@ class Map extends Component {
         coordinates: { lon: 0, lat: 0 },
         info: { vid: '', heading: 0 },
       },
-      // selectedStops: [],
-      subroute: {},
       currentStateTime: new Date(Date.now()),
       showStops: true,
+      selectedStops: [],
+      subroute: null,
     };
   }
 
   componentWillMount() {
     this.selectedRoutes = new Set();
-    this.selectedStops = [];
     this.updateDimensions();
     window.addEventListener('resize', this.updateDimensions.bind(this));
   }
@@ -118,29 +117,34 @@ class Map extends Component {
    * given the two selected stop sids, returns a line segment
    * between them
    */
-  getRouteBetweenStops(routeStops) {
-    const stopSids = this.selectedStops.map(stop => stop.sid);
+  getRouteBetweenStops(routeStops, stops) {
+    const stopSids = stops.map(stop => stop.sid);
     stopSids.sort((a, b) => a - b);
     const route = routeStops.map(stop => this.getCoordinateArray(stop));
     let startingPoint = routeStops.find(stop => stop.sid === stopSids[0]);
+    let endingPoint = routeStops.find(stop => stop.sid === stopSids[1]);
+    /*
+    * if either value is unedfined, it means user selected another stop on another route.
+    * so clear all stops and subroute
+    */
+    if (typeof startingPoint === 'undefined' || typeof endingPoint === 'undefined') {
+      this.setState({ subroute: null, selectedStops: [] });
+    }
     startingPoint = this.getCoordinateArray(startingPoint);
     startingPoint = turf.point(startingPoint);
-    let endingPoint = routeStops.find(stop => stop.sid === stopSids[1]);
     endingPoint = this.getCoordinateArray(endingPoint);
     endingPoint = turf.point(endingPoint);
-    // const line = turf.lineString(route, { color: [255, 0, 0] });
     const line = turf.lineString(route);
-    const lineSlice = turf.lineSlice(startingPoint, endingPoint, line);
-    this.setState({ subroute: lineSlice });
+    const subroute = turf.lineSlice(startingPoint, endingPoint, line);
+    this.setState({ subroute, selectedStops: stops });
   }
   /**
    * sets stop sids based on selected stops.
    * Stores up to two stops sids. Used to draw subroutes
    */
   getStopInfo(route, stopCoordinates) {
-    let stops = this.selectedStops;
-    const station
-    = route.stops.find(currentStop => currentStop.lon === stopCoordinates[0]
+    let [...stops] = this.state.selectedStops;
+    const station = route.stops.find(currentStop => currentStop.lon === stopCoordinates[0]
     && currentStop.lat === stopCoordinates[1]);
     const stopInfo = Object.assign({}, stopCoordinates);
     stopInfo.sid = station.sid;
@@ -152,10 +156,10 @@ class Map extends Component {
       console.log(`Stop Sid: ${stopInfo.sid}`);
       stops.push(stopInfo);
     }
-    // this.setState({ selectedStops: stops });
-    this.selectedStops = stops;
     if (stops.length === 2) {
-      this.getRouteBetweenStops(route.stops);
+      this.getRouteBetweenStops(route.stops, stops);
+    } else {
+      this.setState({ selectedStops: stops, subroute: null });
     }
   }
   /**
@@ -198,13 +202,11 @@ class Map extends Component {
     } else {
       this.selectedRoutes.add(route);
     }
-    /*
     const newGeojson = {
       features: Array.from(this.selectedRoutes),
       type: 'FeatureCollection',
     };
     this.setState({ geojson: newGeojson });
-    */
   }
 
   renderControlPanel() {
@@ -245,8 +247,10 @@ class Map extends Component {
     const onViewportChange = viewport => this.setState({ viewport });
     const { trynState } = this.props.trynState;
     const { routes } = trynState || {};
-    const { viewport, subroute } = this.state;
-    const selectedStops = [...this.selectedStops];
+    const {
+      viewport, geojson, subroute, selectedStops,
+    } = this.state;
+    const subRouteLayer = subroute === null ? null : getSubRoutesLayer(subroute);
     // I don't know what settings used for,
     // just keeping it in following format to bypass linter errors
 
@@ -263,11 +267,8 @@ class Map extends Component {
             marker => this.getStopInfo(route, marker.object.position), selectedStops,
           )
           : null,
-        // getRoutesLayer(geojson),
-        !(Object.keys(subroute).length === 0)
-        && subroute.constructor === Object && selectedStops.length === 2
-          ? getSubRoutesLayer(subroute)
-          : null,
+        getRoutesLayer(geojson),
+        subRouteLayer,
         ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
       ], []);
     console.log(routeLayers);
