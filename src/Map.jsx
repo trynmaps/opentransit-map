@@ -272,7 +272,6 @@ class Map extends Component {
         subRouteLayer,
         ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
       ], []);
-    console.log(routeLayers);
     return (
       <ReactMapGL
         {...viewport}
