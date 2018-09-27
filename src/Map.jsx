@@ -54,6 +54,9 @@ function sortAlphaNumeric(a, b) {
 // make a copy of routes and sort
 const sortedRoutes = muniRoutesGeoJson.features.slice(0).sort(sortAlphaNumeric);
 
+/*
+* Stop class used to handle info about selected stops
+*/
 class Stop {
   constructor(stop) {
     this.stop = stop;
