@@ -76,7 +76,7 @@ class Stop {
   /**
   * sees if two stops are equal by evaluating their coordinates
   */
-  checkIfTwoStopsAreEqual(stop) {
+  equals(stop) {
     return this.stop.lon === stop.lon && this.stop.lat === stop.lat;
   }
 }
@@ -172,7 +172,7 @@ class Map extends Component {
       stops = [];
     }
     if (stops.length === 0
-      || (stops.length === 1 && !stops[0].checkIfTwoStopsAreEqual(stopInfo))) {
+      || (stops.length === 1 && !stops[0].equals(stopInfo))) {
       console.log(`Stop Sid: ${stopInfo.sid}`);
       stops.push(stopInfo);
     }
@@ -263,7 +263,7 @@ class Map extends Component {
     const {
       viewport, geojson, subroute, selectedStops,
     } = this.state;
-    const subRouteLayer = subroute === null ? null : getSubRoutesLayer(subroute);
+    const subRouteLayer = subroute && getSubRoutesLayer(subroute);
     // I don't know what settings used for,
     // just keeping it in following format to bypass linter errors
 
