@@ -54,6 +54,30 @@ function sortAlphaNumeric(a, b) {
 // make a copy of routes and sort
 const sortedRoutes = muniRoutesGeoJson.features.slice(0).sort(sortAlphaNumeric);
 
+class Stop {
+  constructor(stop) {
+    this.stop = stop;
+  }
+  isUndefined() {
+    return typeof this.stop === 'undefined';
+  }
+  setCoordinates(coordinates) {
+    this.stop = {
+      lon: coordinates[0],
+      lat: coordinates[1],
+    };
+  }
+  getCoordinateArray() {
+    return [this.stop.lon, this.stop.lat];
+  }
+  /**
+  * sees if two stops are equal by evaluating their coordinates
+  */
+  checkIfTwoStopsAreEqual(stop) {
+    return this.stop.lon === stop.lon && this.stop.lat === stop.lat;
+  }
+}
+
 class Map extends Component {
   constructor() {
     super();
@@ -107,34 +131,25 @@ class Map extends Component {
     );
   }
   /**
-   * return coordinates in an array [lat, lon]
-   */
-  getCoordinateArray(stop) {
-    console.log(this);
-    return [stop.lon, stop.lat];
-  }
-  /**
    * given the two selected stop sids, returns a line segment
    * between them
    */
   getRouteBetweenStops(routeStops, stops) {
     const stopSids = stops.map(stop => stop.sid);
     stopSids.sort((a, b) => a - b);
-    const route = routeStops.map(stop => this.getCoordinateArray(stop));
-    let startingPoint = routeStops.find(stop => stop.sid === stopSids[0]);
-    let endingPoint = routeStops.find(stop => stop.sid === stopSids[1]);
+    const route = routeStops.map(stop => [stop.lon, stop.lat]);
+    const startingPointStop = new Stop(routeStops.find(stop => stop.sid === stopSids[0]));
+    const endingPointStop = new Stop(routeStops.find(stop => stop.sid === stopSids[1]));
     /*
-    * if either value is unedfined, it means user selected another stop on another route.
+    * if either value is undefined, it means user selected another stop on another route.
     * so clear all stops and subroute
     */
-    if (typeof startingPoint === 'undefined' || typeof endingPoint === 'undefined') {
+    if (startingPointStop.isUndefined() || endingPointStop.isUndefined()) {
       this.setState({ subroute: null, selectedStops: [] });
       return;
     }
-    startingPoint = this.getCoordinateArray(startingPoint);
-    startingPoint = turf.point(startingPoint);
-    endingPoint = this.getCoordinateArray(endingPoint);
-    endingPoint = turf.point(endingPoint);
+    const startingPoint = turf.point(startingPointStop.getCoordinateArray());
+    const endingPoint = turf.point(endingPointStop.getCoordinateArray());
     const line = turf.lineString(route);
     const subroute = turf.lineSlice(startingPoint, endingPoint, line);
     this.setState({ subroute, selectedStops: stops });
@@ -147,13 +162,14 @@ class Map extends Component {
     let [...stops] = this.state.selectedStops;
     const station = route.stops.find(currentStop => currentStop.lon === stopCoordinates[0]
     && currentStop.lat === stopCoordinates[1]);
-    const stopInfo = Object.assign({}, stopCoordinates);
+    const stopInfo = new Stop();
+    stopInfo.setCoordinates(stopCoordinates);
     stopInfo.sid = station.sid;
     if (stops.length > 1) {
       stops = [];
     }
     if (stops.length === 0
-      || (stops.length === 1 && !this.checkIfTwoStopsAreEqual(stops[0], stopCoordinates))) {
+      || (stops.length === 1 && !stops[0].checkIfTwoStopsAreEqual(stopInfo))) {
       console.log(`Stop Sid: ${stopInfo.sid}`);
       stops.push(stopInfo);
     }
@@ -162,13 +178,6 @@ class Map extends Component {
     } else {
       this.setState({ selectedStops: stops, subroute: null });
     }
-  }
-  /**
-   * sees if two stops are equal by evaluating their coordinates
-   */
-  checkIfTwoStopsAreEqual(stop1, stop2) {
-    console.log(this);
-    return stop1[0] === stop2[0] && stop1[1] === stop2[1];
   }
   /**
    * Calculate & Update state of new dimensions
