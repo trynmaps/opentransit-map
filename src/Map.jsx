@@ -249,9 +249,10 @@ class Map extends Component {
             marker => this.getStopInfo(route, marker.object.position), this.state.selectedStops,
           )
           : null,
-        getRoutesLayer(geojson),
         ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
       ], []);
+
+    routeLayers.push(getRoutesLayer(geojson));
 
     return (
       <ReactMapGL
