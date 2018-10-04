@@ -252,8 +252,7 @@ class Map extends Component {
         ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
       ], []);
 
-    const routesLayer = getRoutesLayer(geojson);
-    routeLayers.push(routesLayer);
+    routeLayers.push(getRoutesLayer(geojson));
 
     return (
       <ReactMapGL
