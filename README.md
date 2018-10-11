@@ -1,4 +1,45 @@
-## Prerequisites
+## Getting Started
+
+Check out our welcome doc: <http://bit.ly/opentransit-onboarding>.
+
+### Tech stack
+
+**Web app**
+
+* Tryn-React (https://github.com/trynmaps/tryn-react): React, Relay, Flow
+
+**Landing page**
+
+* Tryn-Homepage (https://github.com/trynmaps/tryn-homepage): Bootstrap, HTML, CSS, JS 
+
+**Middleware Services**
+
+* Tryn-API (middleware + backend) (https://github.com/trynmaps/tryn-api): Node, GraphQL, Cassandra
+
+**Backend Services**
+
+* Orion (https://github.com/EddyIonescu/orion): Node, CQL (Cassandra Query Language - “like SQL except for when it’s not”), S3
+* Orion-trip-generator: Node, Jest S3, SNS (https://github.com/trynmaps/orion-trip-generator)
+* Orion-gtfs: Node or Python (https://github.com/trynmaps/orion-gtfs)
+* Restbus (https://github.com/trynmaps/restbus): Node
+
+**Database**
+
+* Cassandra (Data Models in Orion)
+
+**Infrastructure**
+
+* Everything except the DB is dockerized and running on a Google Cloud Container
+* Cassandra is in a 3-node cluster of N1s on Google Cloud
+* Currently we only have Prod and Local environments
+
+### Wiki
+
+Also [read our wiki](http://GitHub.com/trynmaps/Orion/wiki) to learn about how we store data.
+
+## Running the app
+
+Prerequisites:
 
 If running tryn-react with the backend running locally:
 - Have tryn-api running and ensure that it's in the same parent directory as this repo.
@@ -8,9 +49,7 @@ If running tryn-react using the production API (recommended - do this unless you
 - Clone tryn-api to the same parent directory as this repo.
 - Checkout the `prod` branch in `tryn-api`.
 
-## Getting Started
-
-Check out our welcome doc: <http://bit.ly/opentransit-onboarding>.
+Once you're ready:
 
 1. Ensure you have the `config.json` file in the src directory. You can get this from the shared files section of our Slack channel.
 2. Run `yarn`.
@@ -18,20 +57,7 @@ Check out our welcome doc: <http://bit.ly/opentransit-onboarding>.
 4. Run `yarn run relay` or (if you installed Watchman) `yarn run relay --watch`
 5. Run `yarn start`.
 
-## Contributing 
-
-1. Look at the issues sections for the repos you’re looking to work on.
-1. Pick an issue you’d like to work on. If you want to take on an existing issue in a repo, just assign it to yourself.
-3. Clone the repo (since you’ll have push access, clone the repo directly).
-4. Ensure your branch name contains the issue number.
-5. Make a PR with your issue linked to it.
-6. Once approved, merge your changes (please squash and merge if the commit messages aren’t descriptive), delete your branch, and close the issue.
-
-We also do code-reviews as to ensure that everything’s done correctly. They’re also a great learning opportunity If you’re new to some of our stack. See [this guide](https://engineeringblog.yelp.com/2017/11/code-review-guidelines.html) for best practices.
-
-Each repo has its own deployment process. Currently none of the repos have automatic deployment - everything’s manually deployed to Prod by Eddy. There are tickets for creating Dev + Staging environments along with adding automatic deployments.
-
-## Issues
+## Outstanding Problems
 
 1. The `tryn-api` repo was recently renamed `opentransit-api`. This will cause an error at the `yarn run relay` command. To fix, rename the `opentransit-api` directory to `tryn-api` by `cd`ing to the parent directory and doing `mv opentransit-api tryn-api`.
 
