@@ -57,10 +57,6 @@ Once you're ready:
 4. Run `yarn run relay` or (if you installed Watchman) `yarn run relay --watch`
 5. Run `yarn start`.
 
-## Outstanding Problems
-
-1. The `tryn-api` repo was recently renamed `opentransit-api`. This will cause an error at the `yarn run relay` command. To fix, rename the `opentransit-api` directory to `tryn-api` by `cd`ing to the parent directory and doing `mv opentransit-api tryn-api`.
-
 ## Deployment
 
 TODO
