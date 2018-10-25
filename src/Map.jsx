@@ -103,6 +103,7 @@ class Map extends Component {
       showStops: true,
       selectedStops: [],
       subroute: null,
+      liveMap: false,
     };
   }
 
@@ -221,10 +222,24 @@ class Map extends Component {
     };
     this.setState({ geojson: newGeojson });
   }
-
+  toggleLiveMap(event) {
+    const { liveMap } = this.state;
+    console.log(event);
+    debugger; // eslint-disable-line
+    if (liveMap) {
+      this.setNewStateTime(new Date());
+      this.setState({ liveMap: event.target.value });
+    }
+  }
   renderControlPanel() {
     return (
       <div className="control-panel">
+        <div className="liveMapContainer">
+          <Toggle
+            defaultChecked={this.state.liveMap}
+            onChange={event => this.toggleLiveMap(event)}
+          />
+        </div>
         <div className="routes-header">
           <h3>Time</h3>
           <DateTimePicker
