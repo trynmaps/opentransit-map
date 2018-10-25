@@ -162,7 +162,7 @@ class Map extends Component {
    * Stores up to two stops sids. Used to draw subroutes
    */
   getStopInfo(route, stopCoordinates) {
-    let [...stops] = this.state.selectedStops;
+    let stops = [...this.state.selectedStops];
     const station = route.stops.find(currentStop => currentStop.lon === stopCoordinates[0]
     && currentStop.lat === stopCoordinates[1]);
     const stopInfo = new Stop();
