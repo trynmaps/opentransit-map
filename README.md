@@ -6,7 +6,7 @@ Check out our welcome doc: <http://bit.ly/opentransit-onboarding>.
 
 **Web app**
 
-* Tryn-React (https://github.com/trynmaps/tryn-react): React, Relay, Flow
+* Opentransit-Map https://github.com/trynmaps/opentransit-map): React, Relay, Flow
 
 **Landing page**
 
