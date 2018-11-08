@@ -20,6 +20,7 @@ import muniRoutesGeoJson from './res/muniRoutes.geo.json';
 import Checkbox from './Checkbox';
 
 const notAlpha = /[^a-zA-Z]/g;
+const liveDataInterval = 15000;
 
 /*
 Sort by putting letters before numbers and treat number strings as integers.
@@ -222,29 +223,28 @@ class Map extends Component {
     };
     this.setState({ geojson: newGeojson });
   }
-  toggleLiveMap(event) {
-    const { liveMap } = this.state;
-    console.log(event);
-    debugger; // eslint-disable-line
-    if (liveMap) {
+
+  fetchLiveData() {
+    setTimeout(() => {
       this.setNewStateTime(new Date());
-      this.setState({ liveMap: event.target.value });
-    }
+    }, liveDataInterval);
   }
+
   renderControlPanel() {
     return (
       <div className="control-panel">
-        <div className="liveMapContainer">
-          <Toggle
-            defaultChecked={this.state.liveMap}
-            onChange={event => this.toggleLiveMap(event)}
-          />
-        </div>
         <div className="routes-header">
           <h3>Time</h3>
           <DateTimePicker
             value={this.state.currentStateTime}
             onChange={newTime => this.setNewStateTime(newTime)}
+          />
+        </div>
+        <div className=" routes-header liveMapContainer">
+          <h3>Live Mode</h3>
+          <Toggle
+            defaultChecked={this.state.liveMap}
+            onChange={event => this.setState({ liveMap: event.target.value })}
           />
         </div>
         <div className="routes-header stops-toggle">
@@ -332,6 +332,10 @@ class Map extends Component {
   }
 
   render() {
+    const { liveMap } = this.state;
+    if (liveMap) {
+      this.fetchLiveData();
+    }
     return (
       <div className="container-fluid">
         <div className="row">
