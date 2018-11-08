@@ -5,6 +5,32 @@ const atlasIcon = require('./res/icon-atlas.png');
 const busIconWest = require('./res/icon-bus-west.png');
 const busIconEast = require('./res/icon-bus-east.png');
 
+function hashCode(str) { // java String#hashCode
+  let hash = 0;
+  for (let i = 0; i < str.length; i += 1) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash); // eslint-disable-line
+  }
+  return hash;
+}
+
+function intToRGB(i) {
+  let c = (i & 0x00FFFFFF) // eslint-disable-line
+    .toString(16)
+    .toUpperCase();
+
+  return '00000'.substring(0, 6 - c.length) + c;
+}
+
+function hexToRgb(hex) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16),
+  } : null;
+}
+
+
 const STOP_ICON_MAPPING = {
   marker: {
     x: 0, y: 0, width: 128, height: 128, mask: true,
@@ -76,6 +102,7 @@ export function getSubRoutesLayer(subroute) {
 }
 
 export function getVehicleMarkersLayer(route, displayVehicleInfo) {
+  const color = hexToRgb(intToRGB(hashCode(route.rid)));
   /* returns new DeckGL Icon Layer displaying all vehicles on given routes */
   const westData = route.routeStates[0].vehicles.reduce((westBus, vehicle) => {
     if (vehicle.heading >= 180) {
@@ -84,7 +111,7 @@ export function getVehicleMarkersLayer(route, displayVehicleInfo) {
         icon: 'marker',
         size: 128,
         angle: 270 - vehicle.heading,
-        color: [0, 0, 255],
+        color: [color.r, color.g, color.b],
         // added vid & heading info to display onClick pop-up
         vid: vehicle.vid,
         heading: vehicle.heading,
@@ -100,7 +127,7 @@ export function getVehicleMarkersLayer(route, displayVehicleInfo) {
         icon: 'marker',
         size: 128,
         angle: 90 - vehicle.heading,
-        color: [0, 0, 255],
+        color: [color.r, color.g, color.b],
         // added vid & heading info to display onClick pop-up
         vid: vehicle.vid,
         heading: vehicle.heading,
