@@ -258,7 +258,7 @@ class Map extends Component {
 
   renderMap() {
     const onViewportChange = viewport => this.setState({ viewport });
-    const { trynState } = this.props.trynState;
+    const { trynState } = this.props.trynState || {};
     const { routes } = trynState || {};
     const {
       viewport, geojson, subroute, selectedStops,
