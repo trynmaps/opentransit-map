@@ -244,7 +244,7 @@ class Map extends Component {
           <h3>Live Mode</h3>
           <Toggle
             defaultChecked={this.state.liveMap}
-            onChange={event => this.setState({ liveMap: event.target.value })}
+            onChange={() => this.setState({ liveMap: !this.state.liveMap })}
           />
         </div>
         <div className="routes-header stops-toggle">
