@@ -67,6 +67,10 @@ body {
   color: #FFFFFF;
 }
 
+.routes-header > .rw-datetime-picker > div > span > button {
+  border-right: 1px solid #CCC;
+}
+
 .stops-toggle {
   margin-bottom: -8px;
 }
