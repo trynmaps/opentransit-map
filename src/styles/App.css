@@ -67,7 +67,7 @@ body {
   color: #FFFFFF;
 }
 
-.routes-header > .rw-datetime-picker > div > span > button {
+.routes-header > .rw-datetime-picker > .rw-widget-picker > .rw-select > button {
   border-right: 1px solid #CCC;
 }
 
