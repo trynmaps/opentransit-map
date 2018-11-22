@@ -67,14 +67,18 @@ body {
   color: #FFFFFF;
 }
 
-.routes-header > .rw-datetime-picker > .rw-widget-picker > .rw-select > button {
-  border-right: 1px solid #CCC;
-}
-
 .stops-toggle {
   margin-bottom: -8px;
 }
 
 .route-input {
   margin-right: 5px;
+}
+
+/*
+  override for separating date/time buttons due to https://github.com/jquense/react-widgets/issues/694
+  pull request: https://github.com/trynmaps/opentransit-map/pull/80
+*/
+.routes-header > .rw-datetime-picker > .rw-widget-picker > .rw-select > button {
+  border-right: 1px solid #CCC;
 }
