@@ -269,7 +269,7 @@ class Map extends Component {
 
     const selectedRouteNames = new Set();
     this.selectedRoutes
-      .forEach(route => selectedRouteNames.add(route.properties.name));
+      .forEach(route => selectedRouteNames.add(route.properties.name.replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '')));
     const routeLayers = (routes || [])
       .filter(route => selectedRouteNames.has(route.rid))
       .reduce((layers, route) => [
