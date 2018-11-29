@@ -266,12 +266,21 @@ class Map extends Component {
     const subRouteLayer = subroute && getSubRoutesLayer(subroute);
     // I don't know what settings used for,
     // just keeping it in following format to bypass linter errors
-
     const selectedRouteNames = new Set();
     this.selectedRoutes
-      .forEach(route => selectedRouteNames.add(route.properties.name.replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '')));
+      .forEach(route => selectedRouteNames.add(route.properties.name));
+    const selectedRouteDict = {};
+    selectedRouteNames
+      .forEach((name) => {
+        if (name === 'K/T') {
+          // eslint-disable-next-line dot-notation
+          selectedRouteDict['KT'] = name;
+        } else {
+          selectedRouteDict[name] = name;
+        }
+      });
     const routeLayers = (routes || [])
-      .filter(route => selectedRouteNames.has(route.rid))
+      .filter(route => selectedRouteDict[route.rid])
       .reduce((layers, route) => [
         ...layers,
         this.state.showStops
