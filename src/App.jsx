@@ -49,7 +49,7 @@ class App extends Component {
               <Map trynState={props} />
             );
           }
-          return <div>Loading</div>;
+          return <Map />;
         }}
       />
     );

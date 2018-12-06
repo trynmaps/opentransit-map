@@ -273,15 +273,12 @@ class Map extends Component {
 
   renderMap() {
     const onViewportChange = viewport => this.setState({ viewport });
-    const { trynState } = this.props.trynState;
+    const { trynState } = this.props.trynState || {};
     const { routes } = trynState || {};
     const {
       viewport, geojson, subroute, selectedStops,
     } = this.state;
     const subRouteLayer = subroute && getSubRoutesLayer(subroute);
-    // I don't know what settings used for,
-    // just keeping it in following format to bypass linter errors
-
     const selectedRouteNames = new Set();
     this.selectedRoutes
       .forEach(route => selectedRouteNames.add(route.properties.name));
