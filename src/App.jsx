@@ -44,12 +44,8 @@ class App extends Component {
         render={({ error, props }) => {
           if (error) {
             return <div>{error.message}</div>;
-          } else if (props) {
-            return (
-              <Map trynState={props} />
-            );
           }
-          return <Map />;
+          return <Map trynState={props || null} />;
         }}
       />
     );
