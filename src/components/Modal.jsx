@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Modal = ({ show, handleClose, children }) => {
-  const showHideClassName = show ? 'modal-wrapper display-block' : 'modal-wrapper display-none';
+const Modal = ({ showModal, handleClose, children }) => {
+  const showHideClassName = showModal ? 'modal-wrapper display-block' : 'modal-wrapper display-none';
   return (
     <div className={showHideClassName}>
       <section className="modal">
@@ -14,7 +14,7 @@ const Modal = ({ show, handleClose, children }) => {
 };
 
 Modal.propTypes = {
-  show: PropTypes.bool.isRequired,
+  showModal: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
   children: PropTypes.node.isRequired,
 };
