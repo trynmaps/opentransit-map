@@ -266,21 +266,19 @@ class Map extends Component {
     const subRouteLayer = subroute && getSubRoutesLayer(subroute);
     // I don't know what settings used for,
     // just keeping it in following format to bypass linter errors
+
+    // selectedRouteNames comes from GeoJSON file
     const selectedRouteNames = new Set();
     this.selectedRoutes
       .forEach(route => selectedRouteNames.add(route.properties.name));
-    const selectedRouteDict = {};
-    selectedRouteNames
-      .forEach((name) => {
-        if (name === 'K/T') {
-          // eslint-disable-next-line dot-notation
-          selectedRouteDict['KT'] = name;
-        } else {
-          selectedRouteDict[name] = name;
-        }
-      });
+    // maps API route name to GeoJSON route name
+    const routeNameMapping = {
+      KT: 'K/T',
+    };
+    // eslint-disable-next-line no-console
+    console.log(selectedRouteNames);
     const routeLayers = (routes || [])
-      .filter(route => selectedRouteDict[route.rid])
+      .filter(route => selectedRouteNames.has(routeNameMapping[route.rid] || route.rid))
       .reduce((layers, route) => [
         ...layers,
         this.state.showStops
@@ -292,6 +290,8 @@ class Map extends Component {
         subRouteLayer,
         ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
       ], []);
+    // eslint-disable-next-line no-console
+    console.log(routeLayers);
     routeLayers.push(getRoutesLayer(geojson));
     return (
       <ReactMapGL
