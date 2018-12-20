@@ -7,3 +7,4 @@ DS_STORE
 src/__generated__
 src/config.js
 .vscode/
+.idea
