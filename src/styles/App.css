@@ -82,3 +82,16 @@ body {
 .routes-header > .rw-datetime-picker > .rw-widget-picker > .rw-select > button {
   border-right: 1px solid #CCC;
 }
+
+.routes-header > .rw-datetime-picker > .rw-widget-picker > .rw-select-bordered:hover {
+  background-color: #FFF;
+}
+
+.routes-header > .rw-datetime-picker > .rw-widget-picker > .rw-select-bordered:active {
+  box-shadow: none;
+}
+
+
+.routes-header > .rw-datetime-picker > .rw-widget-picker > .rw-select-bordered > .rw-btn:hover {
+  background-color: #E6E6E6;
+}
