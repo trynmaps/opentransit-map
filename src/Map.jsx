@@ -264,9 +264,6 @@ class Map extends Component {
       viewport, geojson, subroute, selectedStops,
     } = this.state;
     const subRouteLayer = subroute && getSubRoutesLayer(subroute);
-    // I don't know what settings used for,
-    // just keeping it in following format to bypass linter errors
-
     // selectedRouteNames comes from GeoJSON file
     const selectedRouteNames = new Set();
     this.selectedRoutes
