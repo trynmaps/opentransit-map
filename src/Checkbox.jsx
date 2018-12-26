@@ -1,7 +1,17 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+// @flow
 
-class Checkbox extends Component {
+import React, { Component } from 'react';
+
+type Props = {
+  label: string,
+  route: any,
+  handleCheckboxChange: (*) => void,
+}
+
+type State = {
+  isChecked: boolean,
+}
+class Checkbox extends Component<Props, State> {
   constructor() {
     super();
     this.state = {
@@ -37,11 +47,5 @@ class Checkbox extends Component {
     );
   }
 }
-
-Checkbox.propTypes = {
-  label: PropTypes.string.isRequired,
-  route: PropTypes.shape().isRequired,
-  handleCheckboxChange: PropTypes.func.isRequired,
-};
 
 export default Checkbox;

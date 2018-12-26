@@ -1,5 +1,8 @@
 {
-  "extends": "airbnb",
+  "extends": [
+    "airbnb",
+    "plugin:flowtype/recommended"
+  ],
   "env": {
     "es6": true,
     "browser": true,
@@ -7,5 +10,8 @@
   },
   "rules": {
     "class-methods-use-this": "off"
-  }
+  },
+  "plugins": [
+    "flowtype"
+  ]
 }
