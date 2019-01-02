@@ -18,69 +18,12 @@ import {
 } from './Route';
 import muniRoutesGeoJson from './res/muniRoutes.geo.json';
 import Checkbox from './Checkbox';
-
+import { Stop, sortAlphaNumeric} from './Util';
 const notAlpha = /[^a-zA-Z]/g;
 const liveDataInterval = 15000;
 
-/*
-Sort by putting letters before numbers and treat number strings as integers.
-Calling Array.prototype.sort() without a compare function sorts elements as
-strings by Unicode code point order, e.g. [2, 12, 13, 9, 1, 27].sort() returns
-[1, 12, 13, 2, 27, 9]
-*/
-function sortAlphaNumeric(a, b) {
-  const aRoute = a.properties.name;
-  const bRoute = b.properties.name;
-  const aInteger = parseInt(aRoute, 10);
-  const bInteger = parseInt(bRoute, 10);
-  const aAlpha = aRoute.replace(notAlpha, '');
-  const bAlpha = bRoute.replace(notAlpha, '');
-
-  // special case for K/T and K-OWL
-  if (aRoute === 'K/T' && bRoute === 'K-OWL') return -1;
-  if (aRoute === 'K-OWL' && bRoute === 'K/T') return 1;
-
-  if (Number.isNaN(aInteger) && Number.isNaN(bInteger)) {
-    return aAlpha < bAlpha ? -1 : 1;
-  } else if (Number.isNaN(aInteger)) {
-    return -1;
-  } else if (Number.isNaN(bInteger)) {
-    return 1;
-  } else if (aInteger === bInteger) {
-    return aAlpha < bAlpha ? -1 : 1;
-  }
-  return aInteger - bInteger;
-}
-
 // make a copy of routes and sort
 const sortedRoutes = muniRoutesGeoJson.features.slice(0).sort(sortAlphaNumeric);
-
-/*
-* Stop class used to handle info about selected stops
-*/
-class Stop {
-  constructor(stop) {
-    this.stop = stop;
-  }
-  isUndefined() {
-    return typeof this.stop === 'undefined';
-  }
-  setCoordinates(coordinates) {
-    this.stop = {
-      lon: coordinates[0],
-      lat: coordinates[1],
-    };
-  }
-  getCoordinateArray() {
-    return [this.stop.lon, this.stop.lat];
-  }
-  /**
-  * sees if two stops are equal by evaluating their coordinates
-  */
-  equals(stop) {
-    return this.stop.lon === stop.lon && this.stop.lat === stop.lat;
-  }
-}
 
 class Map extends Component {
   constructor() {
@@ -125,6 +68,7 @@ class Map extends Component {
         startTime: Number(newStateTime) - 15000,
         endTime: Number(newStateTime),
         agency: 'muni',
+
       },
       null,
       (err) => {
