@@ -6,8 +6,6 @@ import {
   createRefetchContainer,
 } from 'react-relay';
 import propTypes from 'prop-types';
-import { DateTimePicker } from 'react-widgets';
-import Toggle from 'react-toggle';
 import * as turf from '@turf/turf';
 import { MAP_STYLE, MAPBOX_ACCESS_TOKEN } from './config.json';
 import {
@@ -24,10 +22,12 @@ const liveDataInterval = 15000;
 
 // make a copy of routes and sort
 const sortedRoutes = muniRoutesGeoJson.features.slice(0).sort(sortAlphaNumeric);
+import ControlPanel from './ControlPanel';
 
 class Map extends Component {
   constructor() {
     super();
+    this.filterRoutes = this.filterRoutes.bind(this);
     this.state = {
       // Viewport settings that is shared between mapbox and deck.gl
       viewport: {
@@ -43,7 +43,6 @@ class Map extends Component {
         coordinates: { lon: 0, lat: 0 },
         info: { vid: '', heading: 0 },
       },
-      currentStateTime: new Date(Date.now()),
       showStops: true,
       selectedStops: [],
       subroute: null,
@@ -60,7 +59,7 @@ class Map extends Component {
   componentWillUnmount() {
     window.removeEventListener('resize', this.updateDimensions.bind(this));
   }
-
+  
   setNewStateTime(newStateTime) {
     this.setState({ currentStateTime: newStateTime });
     this.props.relay.refetch(
@@ -167,7 +166,6 @@ class Map extends Component {
     };
     this.setState({ geojson: newGeojson });
   }
-
   fetchLiveData() {
     setTimeout(() => {
       this.setNewStateTime(new Date());
@@ -284,7 +282,7 @@ class Map extends Component {
             {this.renderMap()}
           </div>
           <div className="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
-            {this.renderControlPanel()}
+            <ControlPanel filter={this.filterRoutes} />
           </div>
         </div>
       </div>
@@ -297,7 +295,6 @@ Map.propTypes = {
     propTypes.string,
     propTypes.arrayOf(propTypes.object),
   ).isRequired,
-  relay: propTypes.element.isRequired,
 };
 
 export default createRefetchContainer(
