@@ -14,15 +14,10 @@ import {
   getVehicleMarkersLayer,
   getSubRoutesLayer,
 } from './Route';
-import muniRoutesGeoJson from './res/muniRoutes.geo.json';
-import Checkbox from './Checkbox';
-import { Stop, sortAlphaNumeric } from './Util';
+import { Stop } from './Util';
+import ControlPanel from './ControlPanel';
 
 const liveDataInterval = 15000;
-
-// make a copy of routes and sort
-const sortedRoutes = muniRoutesGeoJson.features.slice(0).sort(sortAlphaNumeric);
-import ControlPanel from './ControlPanel';
 
 class Map extends Component {
   constructor() {
@@ -46,7 +41,6 @@ class Map extends Component {
       showStops: true,
       selectedStops: [],
       subroute: null,
-      liveMap: false,
     };
   }
 
@@ -59,25 +53,7 @@ class Map extends Component {
   componentWillUnmount() {
     window.removeEventListener('resize', this.updateDimensions.bind(this));
   }
-  
-  setNewStateTime(newStateTime) {
-    this.setState({ currentStateTime: newStateTime });
-    this.props.relay.refetch(
-      {
-        startTime: Number(newStateTime) - 15000,
-        endTime: Number(newStateTime),
-        agency: 'muni',
 
-      },
-      null,
-      (err) => {
-        if (err) {
-          console.warn(err);
-        }
-      },
-      { force: true },
-    );
-  }
   /**
    * given the two selected stop sids, returns a line segment
    * between them
@@ -170,47 +146,6 @@ class Map extends Component {
     setTimeout(() => {
       this.setNewStateTime(new Date());
     }, liveDataInterval);
-  }
-
-  renderControlPanel() {
-    return (
-      <div className="control-panel">
-        <div className="routes-header">
-          <h3>Time</h3>
-          <DateTimePicker
-            value={this.state.currentStateTime}
-            onChange={newTime => this.setNewStateTime(newTime)}
-          />
-        </div>
-        <div className=" routes-header liveMapContainer">
-          <h3>Live Mode</h3>
-          <Toggle
-            defaultChecked={this.state.liveMap}
-            onChange={() => this.setState({ liveMap: !this.state.liveMap })}
-          />
-        </div>
-        <div className="routes-header stops-toggle">
-          <h3>Stops</h3>
-          <Toggle
-            defaultChecked={this.state.showStops}
-            onChange={() => this.setState({ showStops: !this.state.showStops })}
-          />
-        </div>
-        <div className="routes-header">
-          <h3>Routes</h3>
-        </div>
-        <ul className="route-checkboxes">
-          {sortedRoutes.map(route => (
-            <Checkbox
-              route={route}
-              label={route.properties.name}
-              handleCheckboxChange={checkedRoute => this.filterRoutes(checkedRoute)}
-              key={route.id}
-            />
-          ))}
-        </ul>
-      </div>
-    );
   }
 
   renderMap() {
