@@ -18,8 +18,8 @@ import {
 } from './Route';
 import muniRoutesGeoJson from './res/muniRoutes.geo.json';
 import Checkbox from './Checkbox';
-import { Stop, sortAlphaNumeric} from './Util';
-const notAlpha = /[^a-zA-Z]/g;
+import { Stop, sortAlphaNumeric } from './Util';
+
 const liveDataInterval = 15000;
 
 // make a copy of routes and sort

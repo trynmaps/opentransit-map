@@ -26,6 +26,7 @@ export class Stop {
 }
 
 export function sortAlphaNumeric(a, b) {
+  const notAlpha = /[^a-zA-Z]/g;
   const aRoute = a.properties.name;
   const bRoute = b.properties.name;
   const aInteger = parseInt(aRoute, 10);
