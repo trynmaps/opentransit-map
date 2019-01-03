@@ -11,13 +11,6 @@ const STOP_ICON_MAPPING = {
   },
 };
 
-const colors = {
-  'e': 2322,
-};
-
-colors[route]
-
-
 const BUS_ICON_MAPPING = {
   marker: {
     x: 0, y: 0, width: 128, height: 128, mask: false,
@@ -33,11 +26,6 @@ function selectedStopColor(stop, selectedStops) {
   }
   return [255, 0, 0];
 }
-
-function busColor(route) {
-
-}
-
 export function getStopMarkersLayer(route, getStopInfo, selectedStops) {
   /* returns new DeckGL Icon Layer displaying all stops on given routes */
 
