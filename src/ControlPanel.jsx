@@ -81,8 +81,8 @@ class ControlPanel extends Component {
         <div className="routes-header stops-toggle">
           <h3>Stops</h3>
           <Toggle
-            defaultChecked={this.state.showStops}
-            onChange={() => this.setState({ showStops: !this.state.showStops })}
+            defaultChecked={1}
+            onChange={() => this.props.stop()}
           />
         </div>
         <div className="routes-header">
@@ -106,6 +106,7 @@ class ControlPanel extends Component {
 ControlPanel.propTypes = {
   relay: propTypes.element.isRequired,
   filter: propTypes.element.isRequired,
+  stop: propTypes.element.isRequired,
 };
 
 export default ControlPanel;

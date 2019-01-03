@@ -47,6 +47,7 @@ class Map extends Component {
   constructor() {
     super();
     this.filterRoutes = this.filterRoutes.bind(this);
+    this.toggleStops = this.toggleStops.bind(this);
     this.state = {
       // Viewport settings that is shared between mapbox and deck.gl
       viewport: {
@@ -167,6 +168,10 @@ class Map extends Component {
     this.setState({ geojson: newGeojson });
   }
 
+  toggleStops() {
+    this.setState({ showStops: !this.state.showStops });
+  }
+
   renderMap() {
     const onViewportChange = viewport => this.setState({ viewport });
     const { trynState } = this.props.trynState || {};
@@ -232,7 +237,7 @@ class Map extends Component {
             {this.renderMap()}
           </div>
           <div className="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
-            <ControlPanel filter={this.filterRoutes} />
+            <ControlPanel filter={this.filterRoutes} stop={this.toggleStops} />
           </div>
         </div>
       </div>
