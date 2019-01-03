@@ -6,8 +6,6 @@ import {
   createRefetchContainer,
 } from 'react-relay';
 import propTypes from 'prop-types';
-import { DateTimePicker } from 'react-widgets';
-import Toggle from 'react-toggle';
 import * as turf from '@turf/turf';
 import { MAP_STYLE, MAPBOX_ACCESS_TOKEN } from './config.json';
 import {
@@ -18,6 +16,7 @@ import {
 } from './Route';
 import muniRoutesGeoJson from './res/muniRoutes.geo.json';
 import Checkbox from './Checkbox';
+import ControlPanel from './ControlPanel';
 
 const notAlpha = /[^a-zA-Z]/g;
 
@@ -85,6 +84,8 @@ class Stop {
 class Map extends Component {
   constructor() {
     super();
+    this.filterRoutes = this.filterRoutes.bind(this);
+    this.toggleStops = this.toggleStops.bind(this);
     this.state = {
       // Viewport settings that is shared between mapbox and deck.gl
       viewport: {
@@ -100,7 +101,6 @@ class Map extends Component {
         coordinates: { lon: 0, lat: 0 },
         info: { vid: '', heading: 0 },
       },
-      currentStateTime: new Date(Date.now()),
       showStops: true,
       selectedStops: [],
       subroute: null,
@@ -117,23 +117,6 @@ class Map extends Component {
     window.removeEventListener('resize', this.updateDimensions.bind(this));
   }
 
-  setNewStateTime(newStateTime) {
-    this.setState({ currentStateTime: newStateTime });
-    this.props.relay.refetch(
-      {
-        startTime: Number(newStateTime) - 15000,
-        endTime: Number(newStateTime),
-        agency: 'muni',
-      },
-      null,
-      (err) => {
-        if (err) {
-          console.warn(err);
-        }
-      },
-      { force: true },
-    );
-  }
   /**
    * given the two selected stop sids, returns a line segment
    * between them
@@ -222,41 +205,11 @@ class Map extends Component {
     };
     this.setState({ geojson: newGeojson });
   }
-
-  renderControlPanel() {
-    return (
-      <div className="control-panel">
-        <div className="routes-header">
-          <h3>Time</h3>
-          <DateTimePicker
-            value={this.state.currentStateTime}
-            onChange={newTime => this.setNewStateTime(newTime)}
-          />
-        </div>
-        <div className="routes-header stops-toggle">
-          <h3>Stops</h3>
-          <Toggle
-            defaultChecked={this.state.showStops}
-            onChange={() => this.setState({ showStops: !this.state.showStops })}
-          />
-        </div>
-        <div className="routes-header">
-          <h3>Routes</h3>
-        </div>
-        <ul className="route-checkboxes">
-          {sortedRoutes.map(route => (
-            <Checkbox
-              route={route}
-              label={route.properties.name}
-              handleCheckboxChange={checkedRoute => this.filterRoutes(checkedRoute)}
-              key={route.id}
-            />
-          ))}
-        </ul>
-      </div>
-    );
+  
+  toggleStops() {
+    this.setState({ showStops: !this.state.showStops });
   }
-
+  
   renderMap() {
     const onViewportChange = viewport => this.setState({ viewport });
     const { trynState } = this.props.trynState || {};
@@ -325,7 +278,7 @@ class Map extends Component {
             {this.renderMap()}
           </div>
           <div className="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
-            {this.renderControlPanel()}
+            <ControlPanel filterRoutes={this.filterRoutes} toggleStops={this.toggleStops} />
           </div>
         </div>
       </div>
@@ -338,7 +291,6 @@ Map.propTypes = {
     propTypes.string,
     propTypes.arrayOf(propTypes.object),
   ).isRequired,
-  relay: propTypes.element.isRequired,
 };
 
 export default createRefetchContainer(
