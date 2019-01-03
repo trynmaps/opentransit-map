@@ -53,6 +53,7 @@ function sortAlphaNumeric(a, b) {
 
 // make a copy of routes and sort
 const sortedRoutes = muniRoutesGeoJson.features.slice(0).sort(sortAlphaNumeric);
+// sortedRoutes.forEach(route => console.log(route.properties.name));
 
 /*
 * Stop class used to handle info about selected stops
@@ -267,6 +268,8 @@ class Map extends Component {
     const selectedRouteNames = new Set();
     this.selectedRoutes
       .forEach(route => selectedRouteNames.add(route.properties.name));
+    // console.log('testings3', selectedRouteNames);
+    console.log('testings3', routes);
     const routeLayers = (routes || [])
       .filter(route => selectedRouteNames.has(route.rid))
       .reduce((layers, route) => [
@@ -281,6 +284,7 @@ class Map extends Component {
         ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
       ], []);
     routeLayers.push(getRoutesLayer(geojson));
+    console.log('testings', routeLayers);
     return (
       <ReactMapGL
         {...viewport}
