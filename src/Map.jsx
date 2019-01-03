@@ -167,11 +167,11 @@ class Map extends Component {
     };
     this.setState({ geojson: newGeojson });
   }
-  
+
   toggleStops() {
     this.setState({ showStops: !this.state.showStops });
   }
-  
+
   renderMap() {
     const onViewportChange = viewport => this.setState({ viewport });
     const { trynState } = this.props.trynState || {};
