@@ -81,8 +81,8 @@ class ControlPanel extends Component {
         <div className="routes-header stops-toggle">
           <h3>Stops</h3>
           <Toggle
-            defaultChecked={1}
-            onChange={() => this.props.stop()}
+            defaultChecked
+            onChange={() => this.props.toggleStops()}
           />
         </div>
         <div className="routes-header">
@@ -93,7 +93,7 @@ class ControlPanel extends Component {
             <Checkbox
               route={route}
               label={route.properties.name}
-              handleCheckboxChange={checkedRoute => this.props.filter(checkedRoute)}
+              handleCheckboxChange={checkedRoute => this.props.filterRoutes(checkedRoute)}
               key={route.id}
             />
           ))}
@@ -105,8 +105,8 @@ class ControlPanel extends Component {
 
 ControlPanel.propTypes = {
   relay: propTypes.element.isRequired,
-  filter: propTypes.element.isRequired,
-  stop: propTypes.element.isRequired,
+  filterRoutes: propTypes.element.isRequired,
+  toggleStops: propTypes.element.isRequired,
 };
 
 export default ControlPanel;

@@ -237,7 +237,7 @@ class Map extends Component {
             {this.renderMap()}
           </div>
           <div className="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
-            <ControlPanel filter={this.filterRoutes} stop={this.toggleStops} />
+            <ControlPanel filterRoutes={this.filterRoutes} toggleStops={this.toggleStops} />
           </div>
         </div>
       </div>
