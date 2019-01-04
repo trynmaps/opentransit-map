@@ -14,7 +14,6 @@ import {
   getVehicleMarkersLayer,
   getSubRoutesLayer,
 } from './Route';
-
 import muniRoutesGeoJson from './res/muniRoutes.geo.json';
 import Checkbox from './Checkbox';
 import ControlPanel from './ControlPanel';
