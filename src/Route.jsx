@@ -96,7 +96,7 @@ export function getSubRoutesLayer(subroute) {
   return subrouteLayer;
 }
 
-/* convert line name to hex color */
+/* convert line name to color */
 function lineToColor(line) {
   const checkedLine = MUNI_COLOR.filter(e => e.line === line);
   if (checkedLine.length > 0) {
@@ -106,7 +106,6 @@ function lineToColor(line) {
 }
 
 export function getVehicleMarkersLayer(route, displayVehicleInfo) {
-  console.log('testings4', route.rid);
   /* return a new IconLayer */
   function newIconLayer(id, data, iconAtlas) {
     return new IconLayer({

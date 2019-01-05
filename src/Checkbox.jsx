@@ -14,7 +14,6 @@ class Checkbox extends Component {
     this.setState({
       isChecked: !this.state.isChecked,
     });
-    console.log('testings2', route);
     handleCheckboxChange(route);
   }
 
