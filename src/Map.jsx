@@ -173,7 +173,6 @@ class Map extends Component {
     }
     if (stops.length === 0
       || (stops.length === 1 && !stops[0].equals(stopInfo))) {
-      console.log(`Stop Sid: ${stopInfo.sid}`);
       stops.push(stopInfo);
     }
     if (stops.length === 2) {
@@ -273,7 +272,6 @@ class Map extends Component {
       KT: 'K/T',
     };
     // eslint-disable-next-line no-console
-    console.log(selectedRouteNames);
     const routeLayers = (routes || [])
       .filter(route => selectedRouteNames.has(routeNameMapping[route.rid] || route.rid))
       .reduce((layers, route) => [
@@ -288,7 +286,6 @@ class Map extends Component {
         ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
       ], []);
     // eslint-disable-next-line no-console
-    console.log(routeLayers);
     routeLayers.push(getRoutesLayer(geojson));
     return (
       <ReactMapGL
