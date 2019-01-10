@@ -75,10 +75,50 @@ body {
   margin-right: 5px;
 }
 
+.modal-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width:100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.modal {
+  display: inherit;
+  position:fixed;
+  background: white;
+  width: 80%;
+  height: auto;
+  top:50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+}
+
+.display-block {
+  display: block;
+}
+
+.display-none {
+  display: none;
+}
+
 /*
   override for separating date/time buttons due to https://github.com/jquense/react-widgets/issues/694
   pull request: https://github.com/trynmaps/opentransit-map/pull/80
 */
 .routes-header > .rw-datetime-picker > .rw-widget-picker > .rw-select > button {
   border-right: 1px solid #CCC;
+}
+
+.routes-header > .rw-datetime-picker > .rw-widget-picker > .rw-select-bordered:hover {
+  background-color: #FFF;
+}
+
+.routes-header > .rw-datetime-picker > .rw-widget-picker > .rw-select-bordered:active {
+  box-shadow: none;
+}
+  
+.routes-header > .rw-datetime-picker > .rw-widget-picker > .rw-select-bordered > .rw-btn:hover {
+  background-color: #E6E6E6;
 }
