@@ -1,6 +1,6 @@
 // https://deck.gl/#/documentation/deckgl-api-reference/layers/icon-layer
-// TODO:
-// use css transform to flip
+// TODO optional:
+// may be we can use css transform to flip the bus icon
 
 import { GeoJsonLayer, IconLayer } from 'deck.gl';
 
@@ -26,15 +26,15 @@ const MUNI_COLOR = [
   { line: 'E', color: [102, 102, 102] },
   { line: 'F', color: [240, 230, 140] },
   { line: 'J', color: [250, 166, 52] },
-  { line: 'K', color: [86, 155, 190] },
+  { line: 'KT', color: [86, 155, 190] },
   { line: 'L', color: [146, 39, 143] },
   { line: 'M', color: [0, 135, 82] },
   { line: 'N', color: [0, 83, 155] },
   { line: 'S', color: [255, 204, 0] },
-  { line: 'T', color: [211, 18, 69] },
+  // { line: 'T', color: [211, 18, 69] },
   { line: 'PM', color: [83, 161, 177] },
   { line: 'PH', color: [71, 176, 153] },
-  { line: '61', color: [116, 167, 178] },
+  { line: 'C', color: [116, 167, 178] },
   { line: 'default', color: [204, 0, 51] },
 ];
 
