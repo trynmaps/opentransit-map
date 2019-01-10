@@ -42,11 +42,15 @@ class App extends Component {
           endTime: Date.now(),
         }}
         render={({ error, props }) => {
+          console.log(props);
           if (error) {
             return <div>{error.message}</div>;
+          } else if (props && typeof props !== 'undefined') {
+            return <Map trynState={props} />;
           }
-          return <Map trynState={props || null} />;
-        }}
+          return <div>Loading...</div>;
+          }
+        }
       />
     );
   }
