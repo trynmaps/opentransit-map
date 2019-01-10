@@ -119,7 +119,6 @@ class Map extends Component {
     }
     if (stops.length === 0
       || (stops.length === 1 && !stops[0].equals(stopInfo))) {
-      console.log(`Stop Sid: ${stopInfo.sid}`);
       stops.push(stopInfo);
     }
     if (stops.length === 2) {
@@ -180,11 +179,17 @@ class Map extends Component {
       viewport, geojson, subroute, selectedStops,
     } = this.state;
     const subRouteLayer = subroute && getSubRoutesLayer(subroute);
+    // selectedRouteNames comes from GeoJSON file
     const selectedRouteNames = new Set();
     this.selectedRoutes
       .forEach(route => selectedRouteNames.add(route.properties.name));
+    // maps API route name to GeoJSON route name
+    const routeNameMapping = {
+      KT: 'K/T',
+    };
+    // eslint-disable-next-line no-console
     const routeLayers = (routes || [])
-      .filter(route => selectedRouteNames.has(route.rid))
+      .filter(route => selectedRouteNames.has(routeNameMapping[route.rid] || route.rid))
       .reduce((layers, route) => [
         ...layers,
         this.state.showStops
@@ -196,6 +201,7 @@ class Map extends Component {
         subRouteLayer,
         ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
       ], []);
+    // eslint-disable-next-line no-console
     routeLayers.push(getRoutesLayer(geojson));
     return (
       <ReactMapGL
