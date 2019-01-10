@@ -1,7 +1,3 @@
-// https://deck.gl/#/documentation/deckgl-api-reference/layers/icon-layer
-// TODO optional:
-// may be we can use css transform to flip the bus icon
-
 import { GeoJsonLayer, IconLayer } from 'deck.gl';
 
 // Icon Layer atlas icon
