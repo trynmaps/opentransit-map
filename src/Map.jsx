@@ -48,6 +48,7 @@ class Map extends Component {
     super();
     this.filterRoutes = this.filterRoutes.bind(this);
     this.toggleStops = this.toggleStops.bind(this);
+    this.setNewCity = this.setNewCity.bind(this);
     this.state = {
       // Viewport settings that is shared between mapbox and deck.gl
       viewport: {
@@ -130,6 +131,10 @@ class Map extends Component {
   /**
    * Calculate & Update state of new dimensions
    */
+  setNewCity(city) {
+    console.log(city);
+  }
+
   updateDimensions() {
     this.setState({
       viewport: Object.assign(this.state.viewport, {
@@ -243,7 +248,11 @@ class Map extends Component {
             {this.renderMap()}
           </div>
           <div className="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
-            <ControlPanel filterRoutes={this.filterRoutes} toggleStops={this.toggleStops} />
+            <ControlPanel
+              filterRoutes={this.filterRoutes}
+              toggleStops={this.toggleStops}
+              setNewCity={this.setNewCity}
+            />
           </div>
         </div>
       </div>

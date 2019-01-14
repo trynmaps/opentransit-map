@@ -2,11 +2,25 @@ import React, { Component } from 'react';
 import { DateTimePicker } from 'react-widgets';
 import Toggle from 'react-toggle';
 import propTypes from 'prop-types';
+import Dropdown from 'react-dropdown';
+import 'react-dropdown/style.css';
 import Checkbox from './Checkbox';
 import muniRoutesGeoJson from './res/muniRoutes.geo.json';
+
 // import Map from './Map';
 
 const notAlpha = /[^a-zA-Z]/g;
+
+const cities = [
+  {
+    label: 'San Francisco',
+    value: 'San Francisco',
+  },
+  {
+    label: 'Toronto',
+    value: 'Toronto',
+  },
+];
 
 /*
 Sort by putting letters before numbers and treat number strings as integers.
@@ -47,6 +61,7 @@ class ControlPanel extends Component {
     super();
     this.state = {
       currentStateTime: new Date(Date.now()),
+      selectedCity: 'San Francisco',
     };
   }
 
@@ -85,6 +100,16 @@ class ControlPanel extends Component {
             onChange={() => this.props.toggleStops()}
           />
         </div>
+        <div className="routes-header city-dropdown">
+          <h3>Cities</h3>
+          <Dropdown
+            options={cities}
+            onChange={city => this.props.setNewCity(city)}
+            value={this.state.selectedCity}
+            placeholder="Select a city"
+          />
+        </div>
+
         <div className="routes-header">
           <h3>Routes</h3>
         </div>
@@ -107,6 +132,7 @@ ControlPanel.propTypes = {
   relay: propTypes.element.isRequired,
   filterRoutes: propTypes.element.isRequired,
   toggleStops: propTypes.element.isRequired,
+  setNewCity: propTypes.element.isRequired,
 };
 
 export default ControlPanel;
