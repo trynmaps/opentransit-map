@@ -15,27 +15,23 @@ class ControlPanel extends Component {
     this.state = {
       currentStateTime: new Date(Date.now()),
       liveMap: false,
+      liveDataInterval:15000,
     };
   }
 
   setNewStateTime(newStateTime) {
+    const {fetchLiveData} = this.props;
     this.setState({ currentStateTime: newStateTime });
-    this.props.relay.refetch(
-      {
-        startTime: Number(newStateTime) - 15000,
-        endTime: Number(newStateTime),
-        agency: 'muni',
-      },
-      null,
-      (err) => {
-        if (err) {
-          console.warn(err);
-        }
-      },
-      { force: true },
-    );
-  }
+    fetchLiveData(new Date());
 
+  handleLiveData(newStateTime) {
+    const {liveDataInterval,liveMap} = this.state;
+    const {fetchLiveData} = this.props;
+    this.setState({ liveData: !liveData,currentStateTime:newStateTime });
+    setTimeout(() => {
+      fetchLiveData(new Date());
+    }, liveDataInterval);
+  }
   render() {
     return (
       <div className="control-panel">
@@ -50,7 +46,7 @@ class ControlPanel extends Component {
           <h3>Live Mode</h3>
           <Toggle
             defaultChecked={this.state.liveMap}
-            onChange={() => this.setState({ liveMap: !this.state.liveMap })}
+            onChange={() =>this.handleLiveData}
           />
         </div>
         <div className="routes-header stops-toggle">
