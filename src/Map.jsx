@@ -170,6 +170,7 @@ class Map extends Component {
   toggleStops() {
     this.setState({ showStops: !this.state.showStops });
   }
+  
   fetchData(newStateTime, liveDataInterval) {
     this.props.relay.refetch(
       {
