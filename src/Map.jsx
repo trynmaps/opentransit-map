@@ -15,6 +15,7 @@ import {
   getSubRoutesLayer,
 } from './Route';
 import ControlPanel from './ControlPanel';
+import cities from './Cities';
 
 /*
 * Stop class used to handle info about selected stops
@@ -132,30 +133,14 @@ class Map extends Component {
    * Calculate & Update state of new dimensions
    */
 
-  setNewCity(city) {
-    const cities = [
-      {
-        name: 'San Francisco',
-        latitude: 37.7853,
-        longitude: -122.41669,
-      },
-      {
-        name: 'Toronto',
-        latitude: 43.761539,
-        longitude: -79.411079,
-      },
-    ];
-
-    let selectedCity = {};
-
-    for (let i = 0; i < cities.length; i += 1) {
-      if (cities[i].name === city.value) selectedCity = cities[i];
-    }
+  setNewCity(clicked) {
+    let newCity = {};
+    cities.map((city) => { if (city.name === clicked.value) newCity = city; return null; });
 
     this.setState({
       viewport: Object.assign(this.state.viewport, {
-        latitude: selectedCity.latitude,
-        longitude: selectedCity.longitude,
+        latitude: newCity.latitude,
+        longitude: newCity.longitude,
       }),
     });
   }

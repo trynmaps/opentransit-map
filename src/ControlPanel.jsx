@@ -6,21 +6,11 @@ import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import Checkbox from './Checkbox';
 import muniRoutesGeoJson from './res/muniRoutes.geo.json';
+import cities from './Cities';
 
 // import Map from './Map';
 
 const notAlpha = /[^a-zA-Z]/g;
-
-const cities = [
-  {
-    label: 'San Francisco',
-    value: 'San Francisco',
-  },
-  {
-    label: 'Toronto',
-    value: 'Toronto',
-  },
-];
 
 /*
 Sort by putting letters before numbers and treat number strings as integers.
@@ -56,6 +46,10 @@ function sortAlphaNumeric(a, b) {
 // make a copy of routes and sort
 const sortedRoutes = muniRoutesGeoJson.features.slice(0).sort(sortAlphaNumeric);
 
+// pull city names from cities
+const cityNames = [];
+cities.map(city => cityNames.push(city.name));
+
 class ControlPanel extends Component {
   constructor() {
     super();
@@ -76,6 +70,7 @@ class ControlPanel extends Component {
       null,
       (err) => {
         if (err) {
+          // eslint-disable-next-line
           console.warn(err);
         }
       },
@@ -103,7 +98,7 @@ class ControlPanel extends Component {
         <div className="routes-header city-dropdown">
           <h3>Cities</h3>
           <Dropdown
-            options={cities}
+            options={cityNames}
             onChange={city => this.props.setNewCity(city)}
             value={this.state.selectedCity}
             placeholder="Select a city"
