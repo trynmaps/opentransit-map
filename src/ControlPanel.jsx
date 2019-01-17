@@ -8,6 +8,7 @@ import { sortAlphaNumeric } from './Util';
 
 // make a copy of routes and sort
 const sortedRoutes = muniRoutesGeoJson.features.slice(0).sort(sortAlphaNumeric);
+const liveDataInterval = 15000;
 
 class ControlPanel extends Component {
   constructor() {
@@ -15,24 +16,25 @@ class ControlPanel extends Component {
     this.state = {
       currentStateTime: new Date(Date.now()),
       liveMap: false,
-      liveDataInterval:15000,
     };
   }
 
   setNewStateTime(newStateTime) {
-    const {fetchLiveData} = this.props;
     this.setState({ currentStateTime: newStateTime });
-    fetchLiveData(new Date());
+    this.props.fetchData(newStateTime, liveDataInterval);
+  }
 
-  handleLiveData(newStateTime) {
-    const {liveDataInterval,liveMap} = this.state;
-    const {fetchLiveData} = this.props;
-    this.setState({ liveData: !liveData,currentStateTime:newStateTime });
+  handleLiveData() {
     setTimeout(() => {
-      fetchLiveData(new Date());
+      this.setNewStateTime(new Date());
     }, liveDataInterval);
   }
+
   render() {
+    const { liveMap } = this.state;
+    if (liveMap) {
+      this.handleLiveData();
+    }
     return (
       <div className="control-panel">
         <div className="routes-header">
@@ -46,14 +48,14 @@ class ControlPanel extends Component {
           <h3>Live Mode</h3>
           <Toggle
             defaultChecked={this.state.liveMap}
-            onChange={() =>this.handleLiveData}
+            onChange={() => this.setState({ liveMap: !liveMap })}
           />
         </div>
         <div className="routes-header stops-toggle">
           <h3>Stops</h3>
           <Toggle
             defaultChecked={this.state.showStops}
-            onChange={() => this.setState({ showStops: !this.state.showStops })}
+            onChange={() => this.props.toggleStops()}
           />
         </div>
         <div className="routes-header">
@@ -64,7 +66,7 @@ class ControlPanel extends Component {
             <Checkbox
               route={route}
               label={route.properties.name}
-              handleCheckboxChange={checkedRoute => this.props.filter(checkedRoute)}
+              handleCheckboxChange={checkedRoute => this.props.filterRoutes(checkedRoute)}
               key={route.id}
             />
           ))}
@@ -75,8 +77,9 @@ class ControlPanel extends Component {
 }
 
 ControlPanel.propTypes = {
-  relay: propTypes.element.isRequired,
-  filter: propTypes.element.isRequired,
+  filterRoutes: propTypes.element.isRequired,
+  toggleStops: propTypes.element.isRequired,
+  fetchData: propTypes.element.isRequired,
 };
 
 export default ControlPanel;

@@ -14,15 +14,40 @@ import {
   getVehicleMarkersLayer,
   getSubRoutesLayer,
 } from './Route';
-import { Stop } from './Util';
 import ControlPanel from './ControlPanel';
 
-const liveDataInterval = 15000;
+/*
+* Stop class used to handle info about selected stops
+*/
+class Stop {
+  constructor(stop) {
+    this.stop = stop;
+  }
+  isUndefined() {
+    return typeof this.stop === 'undefined';
+  }
+  setCoordinates(coordinates) {
+    this.stop = {
+      lon: coordinates[0],
+      lat: coordinates[1],
+    };
+  }
+  getCoordinateArray() {
+    return [this.stop.lon, this.stop.lat];
+  }
+  /**
+  * sees if two stops are equal by evaluating their coordinates
+  */
+  equals(stop) {
+    return this.stop.lon === stop.lon && this.stop.lat === stop.lat;
+  }
+}
 
 class Map extends Component {
   constructor() {
     super();
     this.filterRoutes = this.filterRoutes.bind(this);
+    this.toggleStops = this.toggleStops.bind(this);
     this.state = {
       // Viewport settings that is shared between mapbox and deck.gl
       viewport: {
@@ -94,7 +119,6 @@ class Map extends Component {
     }
     if (stops.length === 0
       || (stops.length === 1 && !stops[0].equals(stopInfo))) {
-      console.log(`Stop Sid: ${stopInfo.sid}`);
       stops.push(stopInfo);
     }
     if (stops.length === 2) {
@@ -142,10 +166,25 @@ class Map extends Component {
     };
     this.setState({ geojson: newGeojson });
   }
-  fetchLiveData() {
-    setTimeout(() => {
-      this.setNewStateTime(new Date());
-    }, liveDataInterval);
+
+  toggleStops() {
+    this.setState({ showStops: !this.state.showStops });
+  }
+  fetchData(newStateTime, liveDataInterval) {
+    this.props.relay.refetch(
+      {
+        startTime: Number(newStateTime) - liveDataInterval,
+        endTime: Number(newStateTime),
+        agency: 'muni',
+      },
+      null,
+      (err) => {
+        if (err) {
+          console.warn(err);
+        }
+      },
+      { force: true },
+    );
   }
 
   renderMap() {
@@ -156,11 +195,17 @@ class Map extends Component {
       viewport, geojson, subroute, selectedStops,
     } = this.state;
     const subRouteLayer = subroute && getSubRoutesLayer(subroute);
+    // selectedRouteNames comes from GeoJSON file
     const selectedRouteNames = new Set();
     this.selectedRoutes
       .forEach(route => selectedRouteNames.add(route.properties.name));
+    // maps API route name to GeoJSON route name
+    const routeNameMapping = {
+      KT: 'K/T',
+    };
+    // eslint-disable-next-line no-console
     const routeLayers = (routes || [])
-      .filter(route => selectedRouteNames.has(route.rid))
+      .filter(route => selectedRouteNames.has(routeNameMapping[route.rid] || route.rid))
       .reduce((layers, route) => [
         ...layers,
         this.state.showStops
@@ -172,6 +217,7 @@ class Map extends Component {
         subRouteLayer,
         ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
       ], []);
+    // eslint-disable-next-line no-console
     routeLayers.push(getRoutesLayer(geojson));
     return (
       <ReactMapGL
@@ -206,10 +252,6 @@ class Map extends Component {
   }
 
   render() {
-    const { liveMap } = this.state;
-    if (liveMap) {
-      this.fetchLiveData();
-    }
     return (
       <div className="container-fluid">
         <div className="row">
@@ -217,7 +259,11 @@ class Map extends Component {
             {this.renderMap()}
           </div>
           <div className="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
-            <ControlPanel filter={this.filterRoutes} />
+            <ControlPanel
+              filterRoutes={this.filterRoutes}
+              toggleStops={this.toggleStops}
+              fetchData={(newStateTime, liveDataInterval) => this.fetchData(liveDataInterval)}
+            />
           </div>
         </div>
       </div>
@@ -230,6 +276,7 @@ Map.propTypes = {
     propTypes.string,
     propTypes.arrayOf(propTypes.object),
   ).isRequired,
+  relay: propTypes.element.isRequired,
 };
 
 export default createRefetchContainer(
