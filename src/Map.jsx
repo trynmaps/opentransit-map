@@ -15,7 +15,7 @@ import {
   getSubRoutesLayer,
 } from './Route';
 import ControlPanel from './ControlPanel';
-import cities from './Cities';
+import cities from './Cities.json';
 
 /*
 * Stop class used to handle info about selected stops
@@ -135,7 +135,7 @@ class Map extends Component {
 
   setNewCity(clicked) {
     let newCity = {};
-    cities.map((city) => { if (city.name === clicked.value) newCity = city; return null; });
+    cities.forEach((city) => { if (city.name === clicked.value) newCity = city; });
 
     this.setState({
       viewport: Object.assign(this.state.viewport, {

@@ -6,7 +6,7 @@ import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import Checkbox from './Checkbox';
 import muniRoutesGeoJson from './res/muniRoutes.geo.json';
-import cities from './Cities';
+import cities from './Cities.json';
 
 // import Map from './Map';
 
