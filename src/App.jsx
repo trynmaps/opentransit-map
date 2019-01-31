@@ -27,15 +27,15 @@ class App extends Component {
     };
   }
 
-  loadRelay() {
+  render() {
     return (
       <QueryRenderer
         environment={this.state.environment}
         query={graphql`
-            query AppAllVehiclesQuery($agency: String!, $startTime: String!, $endTime: String!) {
-              ...Map_trynState
-            }
-          `}
+        query AppAllVehiclesQuery($agency: String!, $startTime: String!, $endTime: String!) {
+          ...Map_trynState
+        }
+      `}
         variables={{
           agency: 'muni',
           startTime: Date.now() - 15000,
@@ -48,14 +48,6 @@ class App extends Component {
           return <Map trynState={props || null} />;
         }}
       />
-    );
-  }
-
-  render() {
-    return (
-      <div>
-        {this.loadRelay()}
-      </div>
     );
   }
 }

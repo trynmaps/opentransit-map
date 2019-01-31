@@ -4,6 +4,10 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
+nav {
+  background-color: #2C445B;
+}
+
 .App {
   text-align: center;
 }
@@ -43,23 +47,32 @@ body {
   padding: 0;
 }
 
+.map-container {
+  margin-top: 80px;
+}
+
 .sidebar {
-  padding-left: 0;
-  padding-right: 0;
   position: fixed;
-  top: 0;
+  top: 40px;
   bottom: 0;
   min-width: 300px;
   overflow-y: scroll;
   background-color: #2C445B;
+  padding: 0 15px 15px;
+}
+.sidebar.collapse {
+  transition-timing-function: ease;
+  transition-duration: .2s;
+}
+.sidebar.collapsing {
+  opacity: 0.8;
+  width: 0;
+  transition-timing-function: ease-in;
+  transition-property: width;
 }
 
 .offset-md-2 {
   margin-left: 16.666667%;
-}
-
-.control-panel {
-  margin: 15px;
 }
 
 .routes-header {
