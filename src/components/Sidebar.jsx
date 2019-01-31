@@ -3,7 +3,7 @@ import { DateTimePicker } from 'react-widgets';
 import Toggle from 'react-toggle';
 import propTypes from 'prop-types';
 import Checkbox from './Checkbox';
-import muniRoutesGeoJson from './res/muniRoutes.geo.json';
+import muniRoutesGeoJson from '../res/muniRoutes.geo.json';
 // import Map from './Map';
 
 const notAlpha = /[^a-zA-Z]/g;
@@ -42,7 +42,7 @@ function sortAlphaNumeric(a, b) {
 // make a copy of routes and sort
 const sortedRoutes = muniRoutesGeoJson.features.slice(0).sort(sortAlphaNumeric);
 
-class ControlPanel extends Component {
+class Sidebar extends Component {
   constructor() {
     super();
     this.state = {
@@ -70,7 +70,7 @@ class ControlPanel extends Component {
 
   render() {
     return (
-      <div className="control-panel">
+      <div id="sidebar" className="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar collapse in">
         <div className="routes-header">
           <h3>Time</h3>
           <DateTimePicker
@@ -103,10 +103,10 @@ class ControlPanel extends Component {
   }
 }
 
-ControlPanel.propTypes = {
+Sidebar.propTypes = {
   relay: propTypes.element.isRequired,
   filterRoutes: propTypes.element.isRequired,
   toggleStops: propTypes.element.isRequired,
 };
 
-export default ControlPanel;
+export default Sidebar;

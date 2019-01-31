@@ -1,9 +1,9 @@
 import { GeoJsonLayer, IconLayer } from 'deck.gl';
 
 // Icon Layer atlas icon
-const atlasIcon = require('./res/icon-atlas.png');
-const busIconWest = require('./res/icon-bus-west.png');
-const busIconEast = require('./res/icon-bus-east.png');
+const atlasIcon = require('../res/icon-atlas.png');
+const busIconWest = require('../res/icon-bus-west.png');
+const busIconEast = require('../res/icon-bus-east.png');
 
 const STOP_ICON_MAPPING = {
   marker: {

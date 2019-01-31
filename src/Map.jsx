@@ -13,8 +13,9 @@ import {
   getRoutesLayer,
   getVehicleMarkersLayer,
   getSubRoutesLayer,
-} from './Route';
-import ControlPanel from './ControlPanel';
+} from './components/Route';
+import Sidebar from './components/Sidebar';
+import Header from './components/Header';
 
 /*
 * Stop class used to handle info about selected stops
@@ -237,13 +238,14 @@ class Map extends Component {
 
   render() {
     return (
-      <div className="container-fluid">
-        <div className="row">
-          <div className="map col-sm-9 offset-sm-3 col-md-10 offset-md-2">
-            {this.renderMap()}
-          </div>
-          <div className="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
-            <ControlPanel filterRoutes={this.filterRoutes} toggleStops={this.toggleStops} />
+      <div>
+        <Header />
+        <div className="container-fluid">
+          <div className="row">
+            <main className="map col-sm-12 col-md-12">
+              {this.renderMap()}
+            </main>
+            <Sidebar filterRoutes={this.filterRoutes} toggleStops={this.toggleStops} />
           </div>
         </div>
       </div>
