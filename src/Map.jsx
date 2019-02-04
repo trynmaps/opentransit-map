@@ -263,7 +263,8 @@ class Map extends Component {
             <ControlPanel
               filterRoutes={this.filterRoutes}
               toggleStops={this.toggleStops}
-              fetchData={(newStateTime, liveDataInterval) => this.fetchData(liveDataInterval)}
+              fetchData={(newStateTime, liveDataInterval) =>
+                this.fetchData(newStateTime, liveDataInterval)}
             />
           </div>
         </div>
