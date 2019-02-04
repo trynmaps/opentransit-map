@@ -4,71 +4,37 @@ import Toggle from 'react-toggle';
 import propTypes from 'prop-types';
 import Checkbox from './Checkbox';
 import muniRoutesGeoJson from './res/muniRoutes.geo.json';
-// import Map from './Map';
-
-const notAlpha = /[^a-zA-Z]/g;
-
-/*
-Sort by putting letters before numbers and treat number strings as integers.
-Calling Array.prototype.sort() without a compare function sorts elements as
-strings by Unicode code point order, e.g. [2, 12, 13, 9, 1, 27].sort() returns
-[1, 12, 13, 2, 27, 9]
-*/
-function sortAlphaNumeric(a, b) {
-  const aRoute = a.properties.name;
-  const bRoute = b.properties.name;
-  const aInteger = parseInt(aRoute, 10);
-  const bInteger = parseInt(bRoute, 10);
-  const aAlpha = aRoute.replace(notAlpha, '');
-  const bAlpha = bRoute.replace(notAlpha, '');
-
-  // special case for K/T and K-OWL
-  if (aRoute === 'K/T' && bRoute === 'K-OWL') return -1;
-  if (aRoute === 'K-OWL' && bRoute === 'K/T') return 1;
-
-  if (Number.isNaN(aInteger) && Number.isNaN(bInteger)) {
-    return aAlpha < bAlpha ? -1 : 1;
-  } else if (Number.isNaN(aInteger)) {
-    return -1;
-  } else if (Number.isNaN(bInteger)) {
-    return 1;
-  } else if (aInteger === bInteger) {
-    return aAlpha < bAlpha ? -1 : 1;
-  }
-  return aInteger - bInteger;
-}
-
+import { sortAlphaNumeric } from './Util';
 
 // make a copy of routes and sort
 const sortedRoutes = muniRoutesGeoJson.features.slice(0).sort(sortAlphaNumeric);
+const liveDataInterval = 15000;
 
 class ControlPanel extends Component {
   constructor() {
     super();
     this.state = {
       currentStateTime: new Date(Date.now()),
+      liveMap: false,
     };
   }
 
   setNewStateTime(newStateTime) {
     this.setState({ currentStateTime: newStateTime });
-    this.props.relay.refetch(
-      {
-        startTime: Number(newStateTime) - 15000,
-        endTime: Number(newStateTime),
-        agency: 'muni',
-      },
-      null,
-      (err) => {
-        if (err) {
-          console.warn(err);
-        }
-      },
-      { force: true },
-    );
+    this.props.fetchData(newStateTime, liveDataInterval);
+  }
+
+  handleLiveData() {
+    setTimeout(() => {
+      this.setNewStateTime(new Date());
+    }, liveDataInterval);
   }
 
   render() {
+    const { liveMap } = this.state;
+    if (liveMap) {
+      this.handleLiveData();
+    }
     return (
       <div className="control-panel">
         <div className="routes-header">
@@ -78,10 +44,17 @@ class ControlPanel extends Component {
             onChange={newTime => this.setNewStateTime(newTime)}
           />
         </div>
+        <div className=" routes-header liveMapContainer">
+          <h3>Live Mode</h3>
+          <Toggle
+            defaultChecked={this.state.liveMap}
+            onChange={() => this.setState({ liveMap: !liveMap })}
+          />
+        </div>
         <div className="routes-header stops-toggle">
           <h3>Stops</h3>
           <Toggle
-            defaultChecked
+            defaultChecked={this.state.showStops}
             onChange={() => this.props.toggleStops()}
           />
         </div>
@@ -104,9 +77,9 @@ class ControlPanel extends Component {
 }
 
 ControlPanel.propTypes = {
-  relay: propTypes.element.isRequired,
   filterRoutes: propTypes.element.isRequired,
   toggleStops: propTypes.element.isRequired,
+  fetchData: propTypes.element.isRequired,
 };
 
 export default ControlPanel;

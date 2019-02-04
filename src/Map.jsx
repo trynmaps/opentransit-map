@@ -171,6 +171,23 @@ class Map extends Component {
     this.setState({ showStops: !this.state.showStops });
   }
 
+  fetchData(newStateTime, liveDataInterval) {
+    this.props.relay.refetch(
+      {
+        startTime: Number(newStateTime) - liveDataInterval,
+        endTime: Number(newStateTime),
+        agency: 'muni',
+      },
+      null,
+      (err) => {
+        if (err) {
+          console.warn(err);
+        }
+      },
+      { force: true },
+    );
+  }
+
   renderMap() {
     const onViewportChange = viewport => this.setState({ viewport });
     const { trynState } = this.props.trynState || {};
@@ -243,7 +260,12 @@ class Map extends Component {
             {this.renderMap()}
           </div>
           <div className="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
-            <ControlPanel filterRoutes={this.filterRoutes} toggleStops={this.toggleStops} />
+            <ControlPanel
+              filterRoutes={this.filterRoutes}
+              toggleStops={this.toggleStops}
+              fetchData={(newStateTime, liveDataInterval) =>
+                this.fetchData(newStateTime, liveDataInterval)}
+            />
           </div>
         </div>
       </div>
@@ -256,6 +278,7 @@ Map.propTypes = {
     propTypes.string,
     propTypes.arrayOf(propTypes.object),
   ).isRequired,
+  relay: propTypes.element.isRequired,
 };
 
 export default createRefetchContainer(
