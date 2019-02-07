@@ -15,6 +15,7 @@ import {
   getSubRoutesLayer,
 } from './Route';
 import ControlPanel from './ControlPanel';
+import cities from './Cities.json';
 
 /*
 * Stop class used to handle info about selected stops
@@ -48,6 +49,7 @@ class Map extends Component {
     super();
     this.filterRoutes = this.filterRoutes.bind(this);
     this.toggleStops = this.toggleStops.bind(this);
+    this.setNewCity = this.setNewCity.bind(this);
     this.refetch = this.refetch.bind(this);
     this.state = {
       // Viewport settings that is shared between mapbox and deck.gl
@@ -131,6 +133,19 @@ class Map extends Component {
   /**
    * Calculate & Update state of new dimensions
    */
+
+  setNewCity(clicked) {
+    let newCity = {};
+    cities.forEach((city) => { if (city.name === clicked.value) newCity = city; });
+
+    this.setState({
+      viewport: Object.assign(this.state.viewport, {
+        latitude: newCity.latitude,
+        longitude: newCity.longitude,
+      }),
+    });
+  }
+
   updateDimensions() {
     this.setState({
       viewport: Object.assign(this.state.viewport, {
@@ -257,7 +272,12 @@ class Map extends Component {
             {this.renderMap()}
           </div>
           <div className="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
-            <ControlPanel filterRoutes={this.filterRoutes} toggleStops={this.toggleStops} refetch={this.refetch} />
+            <ControlPanel
+              filterRoutes={this.filterRoutes}
+              toggleStops={this.toggleStops}
+              setNewCity={this.setNewCity}
+              refetch={this.refetch}
+            />
           </div>
         </div>
       </div>

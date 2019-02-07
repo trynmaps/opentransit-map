@@ -2,8 +2,12 @@ import React, { Component } from 'react';
 import { DateTimePicker } from 'react-widgets';
 import Toggle from 'react-toggle';
 import propTypes from 'prop-types';
+import Dropdown from 'react-dropdown';
+import 'react-dropdown/style.css';
 import Checkbox from './Checkbox';
 import muniRoutesGeoJson from './res/muniRoutes.geo.json';
+import cities from './Cities.json';
+
 // import Map from './Map';
 
 const notAlpha = /[^a-zA-Z]/g;
@@ -42,11 +46,16 @@ function sortAlphaNumeric(a, b) {
 // make a copy of routes and sort
 const sortedRoutes = muniRoutesGeoJson.features.slice(0).sort(sortAlphaNumeric);
 
+// pull city names from cities
+const cityNames = [];
+cities.map(city => cityNames.push(city.name));
+
 class ControlPanel extends Component {
   constructor() {
     super();
     this.state = {
       currentStateTime: new Date(Date.now()),
+      selectedCity: 'San Francisco',
     };
   }
 
@@ -76,6 +85,16 @@ class ControlPanel extends Component {
             onChange={() => this.props.toggleStops()}
           />
         </div>
+        <div className="routes-header city-dropdown">
+          <h3>Cities</h3>
+          <Dropdown
+            options={cityNames}
+            onChange={city => this.props.setNewCity(city)}
+            value={this.state.selectedCity}
+            placeholder="Select a city"
+          />
+        </div>
+
         <div className="routes-header">
           <h3>Routes</h3>
         </div>
@@ -97,6 +116,7 @@ class ControlPanel extends Component {
 ControlPanel.propTypes = {
   filterRoutes: propTypes.func.isRequired,
   toggleStops: propTypes.func.isRequired,
+  setNewCity: propTypes.element.isRequired,
   refetch: propTypes.func.isRequired,
 };
 
