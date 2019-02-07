@@ -61,21 +61,11 @@ class ControlPanel extends Component {
 
   setNewStateTime(newStateTime) {
     this.setState({ currentStateTime: newStateTime });
-    this.props.relay.refetch(
-      {
-        startTime: Number(newStateTime) - 15000,
-        endTime: Number(newStateTime),
-        agency: 'muni',
-      },
-      null,
-      (err) => {
-        if (err) {
-          // eslint-disable-next-line
-          console.warn(err);
-        }
-      },
-      { force: true },
-    );
+    this.props.refetch({
+      startTime: Number(newStateTime) - 15000,
+      endTime: Number(newStateTime),
+      agency: 'muni',
+    });
   }
 
   render() {
@@ -124,10 +114,10 @@ class ControlPanel extends Component {
 }
 
 ControlPanel.propTypes = {
-  relay: propTypes.element.isRequired,
-  filterRoutes: propTypes.element.isRequired,
-  toggleStops: propTypes.element.isRequired,
+  filterRoutes: propTypes.func.isRequired,
+  toggleStops: propTypes.func.isRequired,
   setNewCity: propTypes.element.isRequired,
+  refetch: propTypes.func.isRequired,
 };
 
 export default ControlPanel;

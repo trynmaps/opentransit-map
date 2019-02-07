@@ -50,6 +50,7 @@ class Map extends Component {
     this.filterRoutes = this.filterRoutes.bind(this);
     this.toggleStops = this.toggleStops.bind(this);
     this.setNewCity = this.setNewCity.bind(this);
+    this.refetch = this.refetch.bind(this);
     this.state = {
       // Viewport settings that is shared between mapbox and deck.gl
       viewport: {
@@ -186,6 +187,19 @@ class Map extends Component {
     this.setState({ showStops: !this.state.showStops });
   }
 
+  refetch(data) {
+    this.props.relay.refetch(
+      data,
+      null,
+      (err) => {
+        if (err) {
+          console.warn(err);
+        }
+      },
+      { force: true },
+    );
+  }
+
   renderMap() {
     const onViewportChange = viewport => this.setState({ viewport });
     const { trynState } = this.props.trynState || {};
@@ -262,6 +276,7 @@ class Map extends Component {
               filterRoutes={this.filterRoutes}
               toggleStops={this.toggleStops}
               setNewCity={this.setNewCity}
+              refetch={this.refetch}
             />
           </div>
         </div>
@@ -275,40 +290,41 @@ Map.propTypes = {
     propTypes.string,
     propTypes.arrayOf(propTypes.object),
   ).isRequired,
+  relay: propTypes.element.isRequired,
 };
 
 export default createRefetchContainer(
   Map,
   graphql`
-    fragment Map_trynState on Query {
-      trynState(agency: $agency, startTime: $startTime, endTime: $endTime){
-        startTime
-        endTime
-        agency
-        routes {
-          rid
-          stops {
-            sid
+  fragment Map_trynState on Query {
+    trynState(agency: $agency, startTime: $startTime, endTime: $endTime){
+      startTime
+      endTime
+      agency
+      routes {
+        rid
+        stops {
+          sid
+          lat
+          lon
+          name
+        }
+        routeStates {
+          vtime
+          vehicles {
+            vid
             lat
             lon
-            name
-          }
-          routeStates {
-            vtime
-            vehicles {
-              vid
-              lat
-              lon
-              heading
-            }
+            heading
           }
         }
       }
     }
+  }
   `,
   graphql`
-    query Map_UpdateStateQuery($agency: String!, $startTime: String!, $endTime: String!) {
-      ...Map_trynState
-    }
+  query Map_UpdateStateQuery($agency: String!, $startTime: String!, $endTime: String!) {
+    ...Map_trynState
+  }
   `,
 );
