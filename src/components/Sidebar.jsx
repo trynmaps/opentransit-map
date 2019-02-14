@@ -61,6 +61,7 @@ class Sidebar extends Component {
       null,
       (err) => {
         if (err) {
+          // eslint-disable-next-line
           console.warn(err);
         }
       },
