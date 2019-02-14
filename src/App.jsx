@@ -32,10 +32,10 @@ class App extends Component {
       <QueryRenderer
         environment={this.state.environment}
         query={graphql`
-        query AppAllVehiclesQuery($agency: String!, $startTime: String!, $endTime: String!) {
-          ...Map_trynState
-        }
-      `}
+          query AppAllVehiclesQuery($agency: String!, $startTime: String!, $endTime: String!) {
+            ...Map_trynState
+          }
+        `}
         variables={{
           agency: 'muni',
           startTime: Date.now() - 15000,
