@@ -42,10 +42,11 @@ class App extends Component {
           endTime: Date.now(),
         }}
         render={({ error, props }) => {
+          console.log(props);
           if (error) {
             return <div>{error.message}</div>;
           }
-          return <Map trynState={props || null} />;
+          return (<div>{props && <Map trynState={props} />}</div>);
         }}
       />
     );

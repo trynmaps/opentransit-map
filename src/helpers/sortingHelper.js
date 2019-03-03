@@ -20,11 +20,14 @@ function sortAlphaNumeric(a, b) {
 
   if (Number.isNaN(aInteger) && Number.isNaN(bInteger)) {
     return aAlpha < bAlpha ? -1 : 1;
-  } else if (Number.isNaN(aInteger)) {
+  }
+  if (Number.isNaN(aInteger)) {
     return -1;
-  } else if (Number.isNaN(bInteger)) {
+  }
+  if (Number.isNaN(bInteger)) {
     return 1;
-  } else if (aInteger === bInteger) {
+  }
+  if (aInteger === bInteger) {
     return aAlpha < bAlpha ? -1 : 1;
   }
   return aInteger - bInteger;

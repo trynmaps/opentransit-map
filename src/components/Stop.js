@@ -5,18 +5,22 @@ class Stop {
   constructor(stop) {
     this.stop = stop;
   }
+
   isUndefined() {
     return typeof this.stop === 'undefined';
   }
+
   setCoordinates(coordinates) {
     this.stop = {
       lon: coordinates[0],
       lat: coordinates[1],
     };
   }
+
   getCoordinateArray() {
     return [this.stop.lon, this.stop.lat];
   }
+
   /**
   * sees if two stops are equal by evaluating their coordinates
   */
