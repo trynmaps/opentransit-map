@@ -17,6 +17,7 @@ const BUS_ICON_MAPPING = {
   },
 };
 
+const TTC_EXPRESS_COLOR = [0, 165, 79];
 /* https://en.wikipedia.org/wiki/Template:MUNI_color */
 const MUNI_COLOR = [
   { line: 'E', color: [102, 102, 102] },
@@ -95,6 +96,10 @@ function lineToColor(line) {
   const checkedLine = MUNI_COLOR.filter(e => e.line === line);
   if (checkedLine.length > 0) {
     return checkedLine[0].color;
+  }
+  // TODO - make color selection for routes agency-scoped
+  if (line >= 900) {
+    return TTC_EXPRESS_COLOR;
   }
   return MUNI_COLOR[MUNI_COLOR.length - 1].color;
 }
