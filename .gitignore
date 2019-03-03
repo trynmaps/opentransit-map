@@ -1,4 +1,6 @@
 node_modules
+build.zip
+build
 config.json
 src/config.json
 src/prodConfig.json

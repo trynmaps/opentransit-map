@@ -1,9 +1,13 @@
 [{
 	"name": "San Francisco",
+	"agency": "muni",
+	"path": "muniRoutes.geo.json",
 	"latitude": 37.7853,
 	"longitude": -122.41669
 }, {
 	"name": "Toronto",
+	"agency": "ttc",
+	"path": "ttcRoutes.geo.json",
 	"latitude": 43.761539,
 	"longitude": -79.411079
 }]

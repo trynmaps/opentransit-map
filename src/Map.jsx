@@ -15,8 +15,6 @@ import {
   getSubRoutesLayer,
 } from './Route';
 import ControlPanel from './ControlPanel';
-import cities from './Cities.json';
-
 /*
 * Stop class used to handle info about selected stops
 */
@@ -47,10 +45,6 @@ class Stop {
 class Map extends Component {
   constructor() {
     super();
-    this.filterRoutes = this.filterRoutes.bind(this);
-    this.toggleStops = this.toggleStops.bind(this);
-    this.setNewCity = this.setNewCity.bind(this);
-    this.refetch = this.refetch.bind(this);
     this.state = {
       // Viewport settings that is shared between mapbox and deck.gl
       viewport: {
@@ -58,7 +52,7 @@ class Map extends Component {
         height: window.innerHeight,
         longitude: -122.41669,
         latitude: 37.7853,
-        zoom: 13,
+        zoom: 12,
         pitch: 0,
         bearing: 0,
       },
@@ -130,18 +124,19 @@ class Map extends Component {
       this.setState({ selectedStops: stops, subroute: null });
     }
   }
-  /**
-   * Calculate & Update state of new dimensions
+
+  /*
+   * Change location when selecting another city, passed into ControlPanel
+   * latitude: coordinate to centre on
+   * longitude: coordinate to centre on
+   * zoom: level of zoom to set to (optional)
    */
-
-  setNewCity(clicked) {
-    let newCity = {};
-    cities.forEach((city) => { if (city.name === clicked.value) newCity = city; });
-
+  setMapLocation(latitude, longitude, zoom) {
     this.setState({
       viewport: Object.assign(this.state.viewport, {
-        latitude: newCity.latitude,
-        longitude: newCity.longitude,
+        latitude,
+        longitude,
+        zoom: zoom || this.state.viewport.zoom,
       }),
     });
   }
@@ -200,6 +195,10 @@ class Map extends Component {
     );
   }
 
+  clearSelectedRoutes() {
+    this.selectedRoutes = new Set();
+  }
+
   renderMap() {
     const onViewportChange = viewport => this.setState({ viewport });
     const { trynState } = this.props.trynState || {};
@@ -208,7 +207,7 @@ class Map extends Component {
       viewport, geojson, subroute, selectedStops,
     } = this.state;
     const subRouteLayer = subroute && getSubRoutesLayer(subroute);
-    // selectedRouteNames comes from GeoJSON file
+    // selectedRouteNames are the route names in the GeoJSON file
     const selectedRouteNames = new Set();
     this.selectedRoutes
       .forEach(route => selectedRouteNames.add(route.properties.name));
@@ -216,7 +215,6 @@ class Map extends Component {
     const routeNameMapping = {
       KT: 'K/T',
     };
-    // eslint-disable-next-line no-console
     const routeLayers = (routes || [])
       .filter(route => selectedRouteNames.has(routeNameMapping[route.rid] || route.rid))
       .reduce((layers, route) => [
@@ -230,7 +228,6 @@ class Map extends Component {
         subRouteLayer,
         ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
       ], []);
-    // eslint-disable-next-line no-console
     routeLayers.push(getRoutesLayer(geojson));
     return (
       <ReactMapGL
@@ -242,7 +239,6 @@ class Map extends Component {
         <div className="navigation-control">
           <NavigationControl onViewportChange={onViewportChange} />
         </div>
-
         {/* React Map GL Popup component displays vehicle ID & heading info */}
         {this.state.popup.coordinates ? (
           <Popup
@@ -255,7 +251,6 @@ class Map extends Component {
               <p>Heading: {this.state.popup.info.heading}</p>
             </div>
           </Popup>) : null}
-
         <DeckGL
           {...viewport}
           layers={routeLayers}
@@ -273,10 +268,12 @@ class Map extends Component {
           </div>
           <div className="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
             <ControlPanel
-              filterRoutes={this.filterRoutes}
-              toggleStops={this.toggleStops}
-              setNewCity={this.setNewCity}
-              refetch={this.refetch}
+              filterRoutes={route => this.filterRoutes(route)}
+              toggleStops={() => this.toggleStops()}
+              setMapLocation={(latitude, longitude, zoom) =>
+                this.setMapLocation(latitude, longitude, zoom)}
+              refetch={data => this.refetch(data)}
+              clearSelectedRoutes={() => this.clearSelectedRoutes()}
             />
           </div>
         </div>
