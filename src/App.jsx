@@ -9,7 +9,7 @@ import {
 } from 'react-relay';
 import Moment from 'moment/moment';
 import momentLocalizer from 'react-widgets-moment';
-import Map from './Map';
+import Map from './components/Map';
 import './styles/App.css';
 import './styles/Zoom.css';
 import environment from './relayEnv';
