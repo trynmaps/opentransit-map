@@ -3,7 +3,7 @@ import { GeoJsonLayer, IconLayer } from 'deck.gl';
 // Icon Layer atlas icon
 const atlasIcon = require('../res/icon-atlas.png');
 const busIconWest = require('../res/icon-bus-west.png');
-const busIconEast = require('../res/icon-bus-east.png');
+const busIconEast = require('..//res/icon-bus-east.png');
 
 const STOP_ICON_MAPPING = {
   marker: {
@@ -21,7 +21,7 @@ const TTC_EXPRESS_COLOR = [0, 165, 79];
 /* https://en.wikipedia.org/wiki/Template:MUNI_color */
 const MUNI_COLOR = [
   { line: 'E', color: [102, 102, 102] },
-  { line: 'F', color: [240, 230, 140] },
+  // { line: 'F', color: [240, 230, 140] },
   { line: 'J', color: [250, 166, 52] },
   { line: 'KT', color: [86, 155, 190] },
   { line: 'L', color: [146, 39, 143] },
@@ -44,19 +44,23 @@ function selectedStopColor(stop, selectedStops) {
   }
   return [255, 0, 0];
 }
-export function getStopMarkersLayer(route, getStopInfo, selectedStops) {
+export function getStopMarkersLayer({ rid, stops }, getStopInfo, selectedStops) {
   /* returns new DeckGL Icon Layer displaying all stops on given routes */
   // Push stop markers into data array
-  const data = route.stops.map(stop => ({
+  const data = stops.map(stop => ({
     position: [stop.lon, stop.lat],
     icon: 'marker',
-    size: 72,
+    size: 32,
     color: selectedStopColor(stop, selectedStops),
   }));
   return (new IconLayer({
-    id: 'stop-icon-layer',
+    id: rid.concat('stop-icon-layer'),
     data,
     iconAtlas: atlasIcon,
+    getIcon: d => d.icon,
+    getPosition: d => d.position,
+    getSize: d => d.size,
+    getColor: d => d.color,
     iconMapping: STOP_ICON_MAPPING,
     pickable: true,
     onClick: info => getStopInfo(info),
@@ -110,6 +114,11 @@ export function getVehicleMarkersLayer(route, displayVehicleInfo) {
     return new IconLayer({
       id,
       data,
+      getIcon: d => d.icon,
+      getPosition: d => d.position,
+      getSize: d => d.size,
+      getColor: d => d.color,
+      getAngle: d => d.angle,
       iconAtlas,
       iconMapping: BUS_ICON_MAPPING,
       pickable: true,
@@ -124,7 +133,7 @@ export function getVehicleMarkersLayer(route, displayVehicleInfo) {
       westBus.push({
         position: [vehicle.lon, vehicle.lat],
         icon: 'marker',
-        size: 128,
+        size: 65,
         angle: 270 - vehicle.heading,
         color: lineToColor(route.rid),
         // added vid & heading info to display onClick pop-up
@@ -140,7 +149,7 @@ export function getVehicleMarkersLayer(route, displayVehicleInfo) {
       eastBus.push({
         position: [vehicle.lon, vehicle.lat],
         icon: 'marker',
-        size: 128,
+        size: 64,
         angle: 90 - vehicle.heading,
         color: lineToColor(route.rid),
         // added vid & heading info to display onClick pop-up
@@ -152,7 +161,7 @@ export function getVehicleMarkersLayer(route, displayVehicleInfo) {
   }, []);
 
   return [
-    newIconLayer('west-vehicle-icon-layer', westData, busIconWest),
-    newIconLayer('east-vehicle-icon-layer', eastData, busIconEast),
+    newIconLayer(route.rid.concat('west-vehicle-icon-layer'), westData, busIconWest),
+    newIconLayer(route.rid.concat('east-vehicle-icon-layer'), eastData, busIconEast),
   ];
 }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ReactMapGL, { NavigationControl, Popup } from 'react-map-gl';
+import MapGL, { NavigationControl, Popup } from 'react-map-gl';
 import DeckGL from 'deck.gl';
 import {
   graphql,
@@ -76,6 +76,7 @@ class Map extends Component {
     const subroute = turf.lineSlice(startingPoint, endingPoint, line);
     this.setState({ subroute, selectedStops: stops });
   }
+
   /**
    * sets stop sids based on selected stops.
    * Stores up to two stops sids. Used to draw subroutes
@@ -206,7 +207,7 @@ class Map extends Component {
       ], []);
     routeLayers.push(getRoutesLayer(geojson));
     return (
-      <ReactMapGL
+      <MapGL
         {...viewport}
         mapStyle={MAP_STYLE}
         mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
@@ -226,12 +227,13 @@ class Map extends Component {
               <p>ID: {this.state.popup.info.vid}</p>
               <p>Heading: {this.state.popup.info.heading}</p>
             </div>
-          </Popup>) : null}
+          </Popup>
+        ) : null}
         <DeckGL
           {...viewport}
           layers={routeLayers}
         />
-      </ReactMapGL>
+      </MapGL>
     );
   }
 

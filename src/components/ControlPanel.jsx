@@ -59,16 +59,15 @@ class ControlPanel extends Component {
               label: city.name,
               value: city,
             }))}
-            onChange={city =>
-              this.setState({
-                selectedCity: city.value,
-                sortedRoutes: this.getCityRoutes(city.value),
-              }, () => {
-                this.props
-                  .setMapLocation(city.value.latitude, city.value.longitude, 11);
-                this.props.clearSelectedRoutes();
-                this.refetch();
-              })
+            onChange={city => this.setState({
+              selectedCity: city.value,
+              sortedRoutes: this.getCityRoutes(city.value),
+            }, () => {
+              this.props
+                .setMapLocation(city.value.latitude, city.value.longitude, 11);
+              this.props.clearSelectedRoutes();
+              this.refetch();
+            })
             }
             value={this.state.selectedCity.name}
             placeholder="Select a city"
