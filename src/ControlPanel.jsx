@@ -4,67 +4,32 @@ import Toggle from 'react-toggle';
 import propTypes from 'prop-types';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
+
 import Checkbox from './Checkbox';
-import muniRoutesGeoJson from './res/muniRoutes.geo.json';
+import sortAlphaNumeric from './sortingHelper';
 import cities from './Cities.json';
-
-// import Map from './Map';
-
-const notAlpha = /[^a-zA-Z]/g;
-
-/*
-Sort by putting letters before numbers and treat number strings as integers.
-Calling Array.prototype.sort() without a compare function sorts elements as
-strings by Unicode code point order, e.g. [2, 12, 13, 9, 1, 27].sort() returns
-[1, 12, 13, 2, 27, 9]
-*/
-function sortAlphaNumeric(a, b) {
-  const aRoute = a.properties.name;
-  const bRoute = b.properties.name;
-  const aInteger = parseInt(aRoute, 10);
-  const bInteger = parseInt(bRoute, 10);
-  const aAlpha = aRoute.replace(notAlpha, '');
-  const bAlpha = bRoute.replace(notAlpha, '');
-
-  // special case for K/T and K-OWL
-  if (aRoute === 'K/T' && bRoute === 'K-OWL') return -1;
-  if (aRoute === 'K-OWL' && bRoute === 'K/T') return 1;
-
-  if (Number.isNaN(aInteger) && Number.isNaN(bInteger)) {
-    return aAlpha < bAlpha ? -1 : 1;
-  } else if (Number.isNaN(aInteger)) {
-    return -1;
-  } else if (Number.isNaN(bInteger)) {
-    return 1;
-  } else if (aInteger === bInteger) {
-    return aAlpha < bAlpha ? -1 : 1;
-  }
-  return aInteger - bInteger;
-}
-
-
-// make a copy of routes and sort
-const sortedRoutes = muniRoutesGeoJson.features.slice(0).sort(sortAlphaNumeric);
-
-// pull city names from cities
-const cityNames = [];
-cities.map(city => cityNames.push(city.name));
 
 class ControlPanel extends Component {
   constructor() {
     super();
+    const initialCity = cities[0]; // San Francisco
     this.state = {
       currentStateTime: new Date(Date.now()),
-      selectedCity: 'San Francisco',
+      selectedCity: initialCity,
+      sortedRoutes: this.getCityRoutes(initialCity),
     };
   }
 
-  setNewStateTime(newStateTime) {
-    this.setState({ currentStateTime: newStateTime });
+  getCityRoutes(city) {
+    const cityGeoJson = require('./res/' + city.path); // eslint-disable-line
+    return cityGeoJson.features.slice(0).sort(sortAlphaNumeric);
+  }
+
+  refetch() {
     this.props.refetch({
-      startTime: Number(newStateTime) - 15000,
-      endTime: Number(newStateTime),
-      agency: 'muni',
+      agency: this.state.selectedCity.agency,
+      startTime: this.state.currentStateTime - 15000,
+      endTime: this.state.currentStateTime,
     });
   }
 
@@ -75,7 +40,9 @@ class ControlPanel extends Component {
           <h3>Time</h3>
           <DateTimePicker
             value={this.state.currentStateTime}
-            onChange={newTime => this.setNewStateTime(newTime)}
+            onChange={newTime => this.setState({
+              currentStateTime: newTime,
+            }, () => this.refetch())}
           />
         </div>
         <div className="routes-header stops-toggle">
@@ -88,18 +55,30 @@ class ControlPanel extends Component {
         <div className="routes-header city-dropdown">
           <h3>Cities</h3>
           <Dropdown
-            options={cityNames}
-            onChange={city => this.props.setNewCity(city)}
-            value={this.state.selectedCity}
+            options={cities.map(city => ({
+              label: city.name,
+              value: city,
+            }))}
+            onChange={city =>
+              this.setState({
+                selectedCity: city.value,
+                sortedRoutes: this.getCityRoutes(city.value),
+              }, () => {
+                this.props
+                  .setMapLocation(city.value.latitude, city.value.longitude, 11);
+                this.props.clearSelectedRoutes();
+                this.refetch();
+              })
+            }
+            value={this.state.selectedCity.name}
             placeholder="Select a city"
           />
         </div>
-
         <div className="routes-header">
           <h3>Routes</h3>
         </div>
         <ul className="list-group">
-          {sortedRoutes.map(route => (
+          {this.state.sortedRoutes.map(route => (
             <Checkbox
               route={route}
               label={route.properties.name}
@@ -116,8 +95,9 @@ class ControlPanel extends Component {
 ControlPanel.propTypes = {
   filterRoutes: propTypes.func.isRequired,
   toggleStops: propTypes.func.isRequired,
-  setNewCity: propTypes.element.isRequired,
+  setMapLocation: propTypes.func.isRequired,
   refetch: propTypes.func.isRequired,
+  clearSelectedRoutes: propTypes.func.isRequired,
 };
 
 export default ControlPanel;
