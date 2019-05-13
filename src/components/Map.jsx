@@ -261,10 +261,10 @@ class Map extends Component {
 }
 
 Map.propTypes = {
-  trynState: propTypes.shape(
+  trynState: propTypes.shape([
     propTypes.string,
     propTypes.arrayOf(propTypes.object),
-  ).isRequired,
+  ]).isRequired,
   relay: propTypes.element.isRequired,
 };
 
