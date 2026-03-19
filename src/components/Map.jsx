@@ -17,12 +17,16 @@ import {
 import ControlPanel from './ControlPanel';
 import Stop from './Stop';
 
+// ✅ Maps city names to agency IDs used in GraphQL API
+const agencyMap = {
+  'San Francisco': 'muni',
+  'Toronto': 'ttc',
+};
 
 class Map extends Component {
   constructor() {
     super();
     this.state = {
-      // Viewport settings that is shared between mapbox and deck.gl
       viewport: {
         width: (2 * window.innerWidth) / 3,
         height: window.innerHeight,
@@ -39,6 +43,7 @@ class Map extends Component {
       showStops: true,
       selectedStops: [],
       subroute: null,
+      agency: 'muni',
     };
   }
 
@@ -52,20 +57,12 @@ class Map extends Component {
     window.removeEventListener('resize', this.updateDimensions.bind(this));
   }
 
-  /**
-   * given the two selected stop sids, returns a line segment
-   * between them
-   */
   getRouteBetweenStops(routeStops, stops) {
     const stopSids = stops.map(stop => stop.sid);
     stopSids.sort((a, b) => a - b);
     const route = routeStops.map(stop => [stop.lon, stop.lat]);
     const startingPointStop = new Stop(routeStops.find(stop => stop.sid === stopSids[0]));
     const endingPointStop = new Stop(routeStops.find(stop => stop.sid === stopSids[1]));
-    /*
-    * if either value is undefined, it means user selected another stop on another route.
-    * so clear all stops and subroute
-    */
     if (startingPointStop.isUndefined() || endingPointStop.isUndefined()) {
       this.setState({ subroute: null, selectedStops: [] });
       return;
@@ -77,14 +74,10 @@ class Map extends Component {
     this.setState({ subroute, selectedStops: stops });
   }
 
-  /**
-   * sets stop sids based on selected stops.
-   * Stores up to two stops sids. Used to draw subroutes
-   */
   getStopInfo(route, stopCoordinates) {
     let stops = [...this.state.selectedStops];
     const station = route.stops.find(currentStop => currentStop.lon === stopCoordinates[0]
-    && currentStop.lat === stopCoordinates[1]);
+      && currentStop.lat === stopCoordinates[1]);
     const stopInfo = new Stop();
     stopInfo.setCoordinates(stopCoordinates);
     stopInfo.sid = station.sid;
@@ -102,20 +95,26 @@ class Map extends Component {
     }
   }
 
-  /*
-   * Change location when selecting another city, passed into ControlPanel
-   * latitude: coordinate to centre on
-   * longitude: coordinate to centre on
-   * zoom: level of zoom to set to (optional)
-   */
-  setMapLocation(latitude, longitude, zoom) {
+  // ✅ FIXED: accepts city as 4th param, updates agency, notifies App.js
+  setMapLocation(latitude, longitude, zoom, city) {
+    const newAgency = agencyMap[city] || this.state.agency;
+
     this.setState({
       viewport: Object.assign(this.state.viewport, {
         latitude,
         longitude,
         zoom: zoom || this.state.viewport.zoom,
       }),
+      agency: newAgency,
+      selectedStops: [],
+      subroute: null,
     });
+
+    if (this.props.onAgencyChange) {
+      this.props.onAgencyChange(newAgency);
+    }
+
+    this.clearSelectedRoutes();
   }
 
   updateDimensions() {
@@ -128,7 +127,6 @@ class Map extends Component {
   }
 
   displayVehicleInfo(info) {
-    /* calls parent' onMarkerClick function to show pop-up to display vehicle id & heading info */
     if (info && info.object && info.object.vid && info.object.heading) {
       this.setState({
         popup: {
@@ -178,20 +176,25 @@ class Map extends Component {
 
   renderMap() {
     const onViewportChange = viewport => this.setState({ viewport });
-    const { trynState } = this.props.trynState || {};
-    const { routes } = trynState || {};
+
+    // ✅ FIXED: correct destructuring — was previously double-destructuring
+    const trynState = this.props.trynState || {};
+    const { routes } = trynState;
+
     const {
       viewport, geojson, subroute, selectedStops,
     } = this.state;
+
     const subRouteLayer = subroute && getSubRoutesLayer(subroute);
-    // selectedRouteNames are the route names in the GeoJSON file
+
     const selectedRouteNames = new Set();
     this.selectedRoutes
       .forEach(route => selectedRouteNames.add(route.properties.name));
-    // maps API route name to GeoJSON route name
+
     const routeNameMapping = {
       KT: 'K/T',
     };
+
     const routeLayers = (routes || [])
       .filter(route => selectedRouteNames.has(routeNameMapping[route.rid] || route.rid))
       .reduce((layers, route) => [
@@ -205,7 +208,9 @@ class Map extends Component {
         subRouteLayer,
         ...getVehicleMarkersLayer(route, info => this.displayVehicleInfo(info)),
       ], []);
+
     routeLayers.push(getRoutesLayer(geojson));
+
     return (
       <MapGL
         {...viewport}
@@ -216,7 +221,6 @@ class Map extends Component {
         <div className="navigation-control">
           <NavigationControl onViewportChange={onViewportChange} />
         </div>
-        {/* React Map GL Popup component displays vehicle ID & heading info */}
         {this.state.popup.coordinates ? (
           <Popup
             longitude={this.state.popup.coordinates.lon}
@@ -248,8 +252,8 @@ class Map extends Component {
             <ControlPanel
               filterRoutes={route => this.filterRoutes(route)}
               toggleStops={() => this.toggleStops()}
-              setMapLocation={(latitude, longitude, zoom) =>
-                this.setMapLocation(latitude, longitude, zoom)}
+              setMapLocation={(latitude, longitude, zoom, city) =>
+                this.setMapLocation(latitude, longitude, zoom, city)}
               refetch={data => this.refetch(data)}
               clearSelectedRoutes={() => this.clearSelectedRoutes()}
             />
@@ -266,6 +270,7 @@ Map.propTypes = {
     propTypes.arrayOf(propTypes.object),
   ]).isRequired,
   relay: propTypes.element.isRequired,
+  onAgencyChange: propTypes.func.isRequired, // ✅ new required prop
 };
 
 export default createRefetchContainer(
