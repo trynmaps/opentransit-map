@@ -21,21 +21,18 @@ const TTC_EXPRESS_COLOR = [0, 165, 79];
 /* https://en.wikipedia.org/wiki/Template:MUNI_color */
 const MUNI_COLOR = [
   { line: 'E', color: [102, 102, 102] },
-  // { line: 'F', color: [240, 230, 140] },
   { line: 'J', color: [250, 166, 52] },
   { line: 'KT', color: [86, 155, 190] },
   { line: 'L', color: [146, 39, 143] },
   { line: 'M', color: [0, 135, 82] },
   { line: 'N', color: [0, 83, 155] },
   { line: 'S', color: [255, 204, 0] },
-  // { line: 'T', color: [211, 18, 69] },
   { line: 'PM', color: [83, 161, 177] },
   { line: 'PH', color: [71, 176, 153] },
   { line: 'C', color: [116, 167, 178] },
   { line: 'default', color: [204, 0, 51] },
 ];
 
-/* changes color of selected stop along a route */
 function selectedStopColor(stop, selectedStops) {
   const selectedStopsIds =
     selectedStops.map(currentstop => currentstop.sid);
@@ -44,9 +41,8 @@ function selectedStopColor(stop, selectedStops) {
   }
   return [255, 0, 0];
 }
+
 export function getStopMarkersLayer({ rid, stops }, getStopInfo, selectedStops) {
-  /* returns new DeckGL Icon Layer displaying all stops on given routes */
-  // Push stop markers into data array
   const data = stops.map(stop => ({
     position: [stop.lon, stop.lat],
     icon: 'marker',
@@ -95,7 +91,6 @@ export function getSubRoutesLayer(subroute) {
   return subrouteLayer;
 }
 
-/* convert line name to color */
 function lineToColor(line) {
   const checkedLine = MUNI_COLOR.filter(e => e.line === line);
   if (checkedLine.length > 0) {
@@ -109,7 +104,6 @@ function lineToColor(line) {
 }
 
 export function getVehicleMarkersLayer(route, displayVehicleInfo) {
-  /* return a new IconLayer */
   function newIconLayer(id, data, iconAtlas) {
     return new IconLayer({
       id,
@@ -122,21 +116,20 @@ export function getVehicleMarkersLayer(route, displayVehicleInfo) {
       iconAtlas,
       iconMapping: BUS_ICON_MAPPING,
       pickable: true,
-      // calls pop-up function
       onClick: info => displayVehicleInfo(info),
     });
   }
 
-  /* returns new DeckGL Icon Layer displaying all vehicles on given routes */
+  // ✅ West-facing buses (heading >= 180): use busIconWest image
+  // angle formula unified to (90 - heading) for correct North-clockwise mapping
   const westData = route.routeStates[0].vehicles.reduce((westBus, vehicle) => {
     if (vehicle.heading >= 180) {
       westBus.push({
         position: [vehicle.lon, vehicle.lat],
         icon: 'marker',
         size: 65,
-        angle: 270 - vehicle.heading,
+        angle: 90 - vehicle.heading, // ✅ FIXED: was (270 - vehicle.heading)
         color: lineToColor(route.rid),
-        // added vid & heading info to display onClick pop-up
         vid: vehicle.vid,
         heading: vehicle.heading,
       });
@@ -144,15 +137,15 @@ export function getVehicleMarkersLayer(route, displayVehicleInfo) {
     return westBus;
   }, []);
 
+  // ✅ East-facing buses (heading < 180): formula was already correct
   const eastData = route.routeStates[0].vehicles.reduce((eastBus, vehicle) => {
     if (vehicle.heading < 180) {
       eastBus.push({
         position: [vehicle.lon, vehicle.lat],
         icon: 'marker',
         size: 64,
-        angle: 90 - vehicle.heading,
+        angle: 90 - vehicle.heading, // ✅ unchanged — already correct
         color: lineToColor(route.rid),
-        // added vid & heading info to display onClick pop-up
         vid: vehicle.vid,
         heading: vehicle.heading,
       });
