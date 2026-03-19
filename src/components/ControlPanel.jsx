@@ -64,7 +64,12 @@ class ControlPanel extends Component {
               sortedRoutes: this.getCityRoutes(city.value),
             }, () => {
               this.props
-                .setMapLocation(city.value.latitude, city.value.longitude, 11);
+                .setMapLocation(
+                  city.value.latitude,
+                  city.value.longitude,
+                  11,
+                  city.value.name, // ✅ FIXED: pass city name so Map.jsx can resolve correct agencyId
+                );
               this.props.clearSelectedRoutes();
               this.refetch();
             })
